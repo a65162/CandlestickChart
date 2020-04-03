@@ -77,7 +77,7 @@ export default {
   },
   proxy: {
     '/api': {
-      target: process.env.MoneyDjHost,
+      target: process.env.MONEY_DJ_HOST,
       changeOrigin: true,
       pathRewrite: {
         '^/api': ''

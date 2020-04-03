@@ -5,9 +5,9 @@
   "author": "阿洧",
   "private": true,
   "scripts": {
-    "dev": "nuxt",
+    "dev": "DEBUG='nuxt:*' nuxt",
     "build": "nuxt build",
-    "start": "nuxt start",
+    "start": "DEBUG='nuxt:*' nuxt start",
     "heroku-postbuild": "npm run build",
     "generate": "nuxt generate",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore ."
