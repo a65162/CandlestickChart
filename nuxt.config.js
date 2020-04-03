@@ -74,7 +74,8 @@ export default {
    */
   axios: {
     credentials: true,
-    baseURL: ''
+    baseURL: '',
+    proxy: true
   },
   proxy: {
     '/api': {
