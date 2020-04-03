@@ -73,7 +73,8 @@ export default {
    ** See https://axios.nuxtjs.org/options
    */
   axios: {
-    credentials: true
+    credentials: true,
+    baseURL: ''
   },
   proxy: {
     '/api': {
