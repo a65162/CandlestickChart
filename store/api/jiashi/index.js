@@ -1,5 +1,6 @@
 export const actions = {
   getStocksInfo({ commit }, option) {
+    console.log(process)
     return this.$axios
       .get(`${process.env.BASE_URL}/api/zdata/mda.xdjxml?x=combo_00308`, {
         responseType: 'document'

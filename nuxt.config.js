@@ -91,6 +91,9 @@ export default {
     /*
      ** You can extend webpack config here
      */
-    extend(config, ctx) {}
+    extend(config, ctx) {},
+    cache: true,
+    hardSource: true,
+    parallel: true
   }
 }
