@@ -83,6 +83,24 @@ export default {
       changeOrigin: true,
       pathRewrite: {
         '^/api': ''
+      },
+      onProxyReq(proxyReq, req, res) {
+        if (
+          !req.headers['accept-candlestick-chart'] ||
+          req.headers['accept-candlestick-chart'] !==
+            'ad9be0b5d43f9e2aba895f3ede723aa1'
+        ) {
+          res.writeHead(500, {
+            'Content-Type': 'application/json; charset=UTF-8'
+          })
+          res.write(
+            JSON.stringify({
+              error: true,
+              message: 'You do not have access permission to view this page.'
+            })
+          )
+          res.end()
+        }
       }
     }
   },

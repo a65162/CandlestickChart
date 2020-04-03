@@ -1,5 +1,9 @@
 export const actions = {
   getStocksInfo({ commit }, option) {
+    this.$axios.setHeader(
+      'accept-candlestick-chart',
+      'ad9be0b5d43f9e2aba895f3ede723aa1'
+    )
     return this.$axios
       .get('/api/zdata/mda.xdjxml?x=combo_00308', {
         responseType: 'document'
@@ -27,15 +31,13 @@ export const actions = {
             }
             return {
               嘉實類股代碼: row.getAttribute('V1'),
-              stock: {
-                category: row.getAttribute('V2'),
-                type,
-                code: row
-                  .getAttribute('V3')
-                  .slice(2, row.getAttribute('V3').length),
-                name: row.getAttribute('V4'),
-                status: row.getAttribute('V7') === 'A' ? '上市' : '上櫃'
-              }
+              category: row.getAttribute('V2'),
+              type,
+              code: row
+                .getAttribute('V3')
+                .slice(2, row.getAttribute('V3').length),
+              name: row.getAttribute('V4'),
+              status: row.getAttribute('V7') === 'A' ? '上市' : '上櫃'
             }
           })
         return {

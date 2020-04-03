@@ -1,32 +1,32 @@
 <template>
   <div class="container py-5">
     <h1 class="text-center mb-5">
-      台灣個股
+      台灣個股列表
     </h1>
     <b-form inline class="mb-4 justify-content-end" @reset.prevent="resetForm">
       <b-form-input
         v-model="filter.name"
-        class="mr-3"
+        class="mb-3 mb-md-0 mr-md-3"
         placeholder="請輸入完整股票名稱"
       ></b-form-input>
       <b-form-input
         v-model="filter.code"
-        class="mr-3"
+        class="mb-3 mb-md-0 mr-md-3"
         placeholder="請輸入股票代碼"
       ></b-form-input>
       <b-form-select
         v-model="filter.category"
-        class="mr-3"
+        class="mb-3 mb-md-0 mr-md-3"
         :options="categoryOptions"
       ></b-form-select>
       <b-form-select
         v-model="filter.type"
-        class="mr-3"
+        class="mb-3 mb-md-0 mr-md-3"
         :options="marketTypeOptions"
       ></b-form-select>
       <b-form-select
         v-model="filter.status"
-        class="mr-3"
+        class="mb-3 mb-md-0 mr-md-3"
         :options="statusOptions"
       ></b-form-select>
       <b-button type="reset">
@@ -38,7 +38,7 @@
       hover
       show-empty
       :items="showStocks"
-      :busy="!stocks"
+      :busy="!showStocks"
       :fields="fields"
       dark
     >
@@ -79,23 +79,23 @@ export default {
           label: '嘉實類股代碼'
         },
         {
-          key: 'stock.name',
+          key: 'name',
           label: '股票名稱'
         },
         {
-          key: 'stock.code',
+          key: 'code',
           label: '股票代碼'
         },
         {
-          key: 'stock.category',
+          key: 'category',
           label: '產業類別'
         },
         {
-          key: 'stock.type',
+          key: 'type',
           label: '金融類別'
         },
         {
-          key: 'stock.status',
+          key: 'status',
           label: '股票狀態'
         },
         {
@@ -124,21 +124,13 @@ export default {
         return this.$lodash.chunk(
           this.stocks.filter((stock) => {
             return (
-              (this.filter.code
-                ? stock.stock.code.match(this.filter.code)
-                : true) &&
-              (this.filter.name
-                ? stock.stock.name.match(this.filter.name)
-                : true) &&
+              (this.filter.code ? stock.code.match(this.filter.code) : true) &&
+              (this.filter.name ? stock.name.match(this.filter.name) : true) &&
               (this.filter.category
-                ? stock.stock.category === this.filter.category
+                ? stock.category === this.filter.category
                 : true) &&
-              (this.filter.type
-                ? stock.stock.type === this.filter.type
-                : true) &&
-              (this.filter.status
-                ? stock.stock.status === this.filter.status
-                : true)
+              (this.filter.type ? stock.type === this.filter.type : true) &&
+              (this.filter.status ? stock.status === this.filter.status : true)
             )
           }),
           20
@@ -156,8 +148,8 @@ export default {
           ...this.$lodash.uniqBy(
             this.stocks.map((stock) => {
               return {
-                value: stock.stock.category,
-                text: stock.stock.category
+                value: stock.category,
+                text: stock.category
               }
             }),
             'value'
@@ -176,8 +168,8 @@ export default {
           ...this.$lodash.uniqBy(
             this.stocks.map((stock) => {
               return {
-                value: stock.stock.type,
-                text: stock.stock.type
+                value: stock.type,
+                text: stock.type
               }
             }),
             'value'
@@ -196,8 +188,8 @@ export default {
           ...this.$lodash.uniqBy(
             this.stocks.map((stock) => {
               return {
-                value: stock.stock.status,
-                text: stock.stock.status
+                value: stock.status,
+                text: stock.status
               }
             }),
             'value'
