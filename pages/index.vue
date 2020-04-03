@@ -57,7 +57,7 @@
       v-if="stockList && $lodash.get(stockList, 'length', 0) > 1"
       v-model="page"
       align="center"
-      :total-rows="stocks.length"
+      :total-rows="stockList.length * perPage"
       :per-page="perPage"
       class="mt-5"
     ></b-pagination>
@@ -141,7 +141,7 @@ export default {
                 : true)
             )
           }),
-          100
+          20
         )
       }
       return null
