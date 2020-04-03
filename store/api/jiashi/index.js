@@ -5,7 +5,7 @@ export const actions = {
       'ad9be0b5d43f9e2aba895f3ede723aa1'
     )
     return this.$axios
-      .get('/api/zdata/mda.xdjxml?x=combo_00308', {
+      .get('/jiashi/zdata/mda.xdjxml?x=combo_00308', {
         responseType: 'document'
       })
       .then((response) => {

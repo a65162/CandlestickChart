@@ -78,15 +78,15 @@ export default {
     proxy: true
   },
   proxy: {
-    '/api': {
+    '/jiashi': {
       target: process.env.MONEY_DJ_HOST,
       changeOrigin: true,
       pathRewrite: {
-        '^/api': ''
+        '^/jiashi': ''
       },
       onProxyReq(proxyReq, req, res) {
         if (
-          !req.headers['accept-candlestick-chart'] ||
+          !req.headers['accept-candlestick-chart'] &&
           req.headers['accept-candlestick-chart'] !==
             'ad9be0b5d43f9e2aba895f3ede723aa1'
         ) {
@@ -101,6 +101,9 @@ export default {
           )
           res.end()
         }
+      },
+      onProxyRes(proxyRes, req, res) {
+        proxyRes.headers['Cache-Control'] = 'No-Store'
       }
     }
   },
