@@ -52,6 +52,11 @@
           找不到資料
         </div>
       </template>
+      <template #cell(operation)>
+        <b-button>
+          K 線圖
+        </b-button>
+      </template>
     </b-table>
     <b-pagination
       v-if="stockList && $lodash.get(stockList, 'length', 0) > 1"
@@ -114,8 +119,11 @@ export default {
   },
   computed: {
     showStocks() {
-      if (this.stockList && this.$lodash.get(this.stockList, 'length', 0)) {
-        return this.stockList[this.page - 1]
+      if (
+        this.stockList &&
+        !this.$lodash.isUndefined(this.$lodash.get(this.stockList, 'length'))
+      ) {
+        return this.stockList[this.page - 1] || []
       }
       return null
     },

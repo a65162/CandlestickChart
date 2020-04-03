@@ -85,13 +85,11 @@ export default {
         '^/jiashi': ''
       },
       onProxyReq(proxyReq, req, res) {
-        if (
-          !req.headers['accept-candlestick-chart'] &&
-          req.headers['accept-candlestick-chart'] !==
-            'ad9be0b5d43f9e2aba895f3ede723aa1'
-        ) {
-          res.writeHead(500, {
-            'Content-Type': 'application/json; charset=UTF-8'
+        const { referer, host } = req.headers
+        if (!referer && !(referer || '').includes(host)) {
+          res.writeHead(400, {
+            'Content-Type': 'application/json; charset=UTF-8',
+            'Cache-Control': 'No-Store'
           })
           res.write(
             JSON.stringify({
