@@ -31,10 +31,7 @@ export default {
       Period: 'D',
       Count: (new Date().getFullYear() - 1962) * 365
     })
-    if (result.error) {
-      console.error(result)
-      return
-    }
+    if (result.error) return
     const table = anychart.data.table('date')
     table.addData(result)
     // defining the chart type
