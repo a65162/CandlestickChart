@@ -1,11 +1,14 @@
 export const actions = {
-  getStocksInfo({ commit }, option) {
+  getStocksBaseInfo({ commit }, option) {
     return this.$axios
-      .get('/jiashi/zdata/mda.xdjxml?x=combo_00308', {
-        responseType: 'document'
+      .get('/jiashi/zdata/mda.xdjxml', {
+        responseType: 'document',
+        params: {
+          x: 'combo_00308'
+        }
       })
       .then((response) => {
-        const data = this.$lodash
+        return this.$lodash
           .toArray(response.data.querySelectorAll('Row'))
           .map((row) => {
             let type = ''
@@ -36,10 +39,39 @@ export const actions = {
               status: row.getAttribute('V7') === 'A' ? '上市' : '上櫃'
             }
           })
+      })
+      .catch((err) => {
         return {
-          counts: data.length,
-          data
+          error: true,
+          ...err
         }
+      })
+  },
+  getStockPriceHistory({ commit }, options) {
+    const { StockID, Period, Count } = options
+    return this.$axios
+      .get('/jiashi/zdata/mda.xdjxml', {
+        responseType: 'document',
+        params: {
+          x: 'combo_01501',
+          StockID,
+          Period,
+          Count
+        }
+      })
+      .then((res) => {
+        return this.$lodash
+          .toArray(res.data.querySelectorAll('Row'))
+          .map((row) => {
+            return {
+              date: row.getAttribute('V1'),
+              open: row.getAttribute('V4'),
+              high: row.getAttribute('V5'),
+              low: row.getAttribute('V6'),
+              close: row.getAttribute('V7'),
+              volume: row.getAttribute('V8')
+            }
+          })
       })
       .catch((err) => {
         return {

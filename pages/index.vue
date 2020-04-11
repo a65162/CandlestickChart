@@ -52,10 +52,16 @@
           找不到資料
         </div>
       </template>
-      <template #cell(operation)>
-        <b-button>
+      <template #cell(operation)="{ item }">
+        <b-button @click.prevent="$root.$emit('bv::show::modal', item.code)">
           K 線圖
         </b-button>
+        <b-modal :id="item.code" centered hide-header hide-footer size="xl">
+          <AnyStockChart
+            :stock-code="`AS${item.code}`"
+            :stock-name="item.name"
+          />
+        </b-modal>
       </template>
     </b-table>
     <b-pagination
@@ -71,13 +77,17 @@
 
 <script>
 import { mapActions } from 'vuex'
+import AnyStockChart from '~/components/AnyStockChart'
 
 export default {
+  components: {
+    AnyStockChart
+  },
   data() {
     return {
       stocks: null,
       page: 1,
-      perPage: 100,
+      perPage: 20,
       fields: [
         {
           key: '嘉實類股代碼',
@@ -141,7 +151,7 @@ export default {
               (this.filter.status ? stock.status === this.filter.status : true)
             )
           }),
-          20
+          this.perPage
         )
       }
       return null
@@ -215,12 +225,12 @@ export default {
     }
   },
   mounted() {
-    this.getStocksInfo().then((result) => {
-      this.stocks = !result.error ? result.data : []
+    this.getStocksBaseInfo().then((result) => {
+      this.stocks = !result.error ? result : []
     })
   },
   methods: {
-    ...mapActions('api/jiashi', ['getStocksInfo']),
+    ...mapActions('api/jiashi', ['getStocksBaseInfo']),
     scrollToTop() {
       window.scrollTo(0, 0)
     },
