@@ -55,7 +55,7 @@ export default {
       .risingFill('#fa3032')
       .name(this.stockName)
 
-    // 在走勢圖加上 EMA
+    // 在走勢圖加上 SMA
     stockChart
       .plot(0)
       .sma(table.mapAs({ value: 'close' }), 20)

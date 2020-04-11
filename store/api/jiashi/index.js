@@ -29,7 +29,7 @@ export const actions = {
                 break
             }
             return {
-              嘉實類股代碼: row.getAttribute('V1'),
+              fullCode: row.getAttribute('V3'),
               category: row.getAttribute('V2'),
               type,
               code: row

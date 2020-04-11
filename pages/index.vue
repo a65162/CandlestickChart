@@ -57,10 +57,7 @@
           K 線圖
         </b-button>
         <b-modal :id="item.code" centered hide-header hide-footer size="xl">
-          <AnyStockChart
-            :stock-code="`AS${item.code}`"
-            :stock-name="item.name"
-          />
+          <AnyStockChart :stock-code="item.fullCode" :stock-name="item.name" />
         </b-modal>
       </template>
     </b-table>
@@ -89,10 +86,6 @@ export default {
       page: 1,
       perPage: 20,
       fields: [
-        {
-          key: '嘉實類股代碼',
-          label: '嘉實類股代碼'
-        },
         {
           key: 'name',
           label: '股票名稱'
