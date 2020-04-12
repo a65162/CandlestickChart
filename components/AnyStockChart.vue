@@ -49,10 +49,7 @@ export default {
     const stockChart = anychart.stock()
 
     // 設定全域的 tooltip
-    stockChart
-      .tooltip()
-      .displayMode('single')
-      .positionMode('float')
+    stockChart.tooltip().titleFormat('{%x}{type:date}')
 
     // 走勢圖
     const candlestickPanel = stockChart.plot(0)
@@ -73,12 +70,9 @@ export default {
       .risingStroke('#fa3032')
       .risingFill('#fa3032')
       .name(this.stockName)
-      .legendItem(false)
       .tooltip()
-      .title(false)
-      .separator(false)
       .format(
-        '開盤價：{%open}\n最高價：{%high}\n最低價：{%low}\n收盤價：{%close}'
+        '開盤價：{%open}\n最高價：{%high}\n最低價：{%low}\n收盤價：{%close}\n{%value}'
       )
 
     // 在走勢圖加上 SMA
@@ -86,17 +80,14 @@ export default {
       .sma(table.mapAs({ value: 'close' }), 20)
       .series()
       .stroke('#0e61cb')
-      .tooltip(false)
     candlestickPanel
       .sma(table.mapAs({ value: 'close' }), 60)
       .series()
       .stroke('#71d3ff')
-      .tooltip(false)
     candlestickPanel
       .sma(table.mapAs({ value: 'close' }), 200)
       .series()
       .stroke('#fddb48')
-      .tooltip(false)
 
     // 交易量
     const volumePanel = stockChart.plot(1)
@@ -135,9 +126,6 @@ export default {
       .rangeSelector()
       .zoomLabelText('區間:')
       .render(stockChart)
-
-    // 隱藏時間 bar
-    stockChart.scroller().enabled(false)
 
     // display the stockChart
     stockChart.container('container').draw()
