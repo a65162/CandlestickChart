@@ -47,6 +47,19 @@ export default {
 
     // defining the chart type
     const stockChart = anychart.stock()
+    // define the grouping
+    const grouping = stockChart.grouping()
+    // set the max number of points
+    grouping.maxVisiblePoints(60)
+
+    // set the levels of grouping
+    grouping.levels([
+      { unit: 'week', count: 1 },
+      { unit: 'month', count: 1 },
+      { unit: 'month', count: 3 },
+      { unit: 'month', count: 6 },
+      { unit: 'year', count: 1 }
+    ])
 
     // 設定全域的 tooltip
     stockChart.tooltip().titleFormat('{%x}{type:date}')
@@ -122,10 +135,56 @@ export default {
     stockChart.title(`${this.stockName}(${this.stockCode})歷史走勢圖`)
 
     // Render the range picker into an instance of a stock stockChart
-    anychart.ui
-      .rangeSelector()
-      .zoomLabelText('區間:')
-      .render(stockChart)
+    const rangeSelector = anychart.ui.rangeSelector()
+    const customRanges = [
+      {
+        text: '日',
+        type: 'unit',
+        unit: 'day',
+        count: 60,
+        anchor: 'last-visible-date'
+      },
+      {
+        text: '週',
+        type: 'unit',
+        unit: 'week',
+        count: 60,
+        anchor: 'last-visible-date'
+      },
+      {
+        text: '月',
+        type: 'unit',
+        unit: 'month',
+        count: 60,
+        anchor: 'last-visible-date'
+      },
+      {
+        text: '季',
+        type: 'unit',
+        unit: 'month',
+        count: 180,
+        anchor: 'last-visible-date'
+      },
+      {
+        text: '半年',
+        type: 'unit',
+        unit: 'month',
+        count: 240,
+        anchor: 'last-visible-date'
+      },
+      {
+        text: '年',
+        type: 'unit',
+        unit: 'year',
+        count: 60,
+        anchor: 'last-visible-date'
+      }
+    ]
+
+    // Set custom ranges for the range selector.
+    rangeSelector.ranges(customRanges)
+
+    rangeSelector.zoomLabelText('週期:').render(stockChart)
 
     // display the stockChart
     stockChart.container('container').draw()
