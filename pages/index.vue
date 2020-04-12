@@ -56,7 +56,14 @@
         <b-button @click.prevent="$root.$emit('bv::show::modal', item.code)">
           K 線圖
         </b-button>
-        <b-modal :id="item.code" centered hide-header hide-footer size="xl">
+        <b-modal
+          :id="item.code"
+          centered
+          hide-header
+          hide-footer
+          size="xl"
+          body-class="p-0"
+        >
           <AnyStockChart :stock-code="item.fullCode" :stock-name="item.name" />
         </b-modal>
       </template>
@@ -238,6 +245,18 @@ export default {
         type: null,
         status: null
       }
+    }
+  },
+  head() {
+    return {
+      script: [
+        {
+          src: 'https://cdn.anychart.com/releases/8.7.1/locales/zh-tw.js'
+        },
+        {
+          src: 'https://cdn.anychart.com/themes/2.0.0/dark_blue.min.js'
+        }
+      ]
     }
   }
 }

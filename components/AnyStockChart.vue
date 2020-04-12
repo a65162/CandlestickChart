@@ -1,11 +1,12 @@
 <template>
-  <div id="container" style="width: 100%; height: 800px;"></div>
+  <div id="container"></div>
 </template>
 
 <script>
 import { mapActions } from 'vuex'
 import anychart from 'anychart'
 import '~/node_modules/anychart/dist/css/anychart-ui.min.css'
+import '~/node_modules/anychart/dist/fonts/css/anychart-font.min.css'
 
 export default {
   props: {
@@ -22,24 +23,42 @@ export default {
     return {}
   },
   async mounted() {
+    // 設定輸出語言
+    anychart.format.outputLocale('zh-tw')
+
+    // 顯示 loading
     const preloader = anychart.ui.preloader()
     preloader.render(document.getElementById('container'))
     preloader.visible(true)
 
+    // 獲取資料源
     const result = await this.getStockPriceHistory({
       StockID: this.stockCode,
       Period: 'D',
       Count: (new Date().getFullYear() - 1962) * 365
     })
     if (result.error) return
+    // 塞入資料源
     const table = anychart.data.table('date')
     table.addData(result)
+
+    // 設定 anyChart 樣式
+    anychart.theme(anychart.themes.darkBlue)
+
     // defining the chart type
     const stockChart = anychart.stock()
 
-    // 走勢圖
+    // 設定全域的 tooltip
     stockChart
-      .plot(0)
+      .tooltip()
+      .displayMode('single')
+      .positionMode('float')
+
+    // 走勢圖
+    const candlestickPanel = stockChart.plot(0)
+    candlestickPanel.legend().title(false)
+    candlestickPanel.crosshair().yLabel(false)
+    candlestickPanel
       .xAxis(false)
       .candlestick(
         table.mapAs({
@@ -54,43 +73,59 @@ export default {
       .risingStroke('#fa3032')
       .risingFill('#fa3032')
       .name(this.stockName)
+      .legendItem(false)
+      .tooltip()
+      .title(false)
+      .separator(false)
+      .format(
+        '開盤價：{%open}\n最高價：{%high}\n最低價：{%low}\n收盤價：{%close}'
+      )
 
     // 在走勢圖加上 SMA
-    stockChart
-      .plot(0)
+    candlestickPanel
       .sma(table.mapAs({ value: 'close' }), 20)
       .series()
       .stroke('#0e61cb')
-    stockChart
-      .plot(0)
+      .tooltip(false)
+    candlestickPanel
       .sma(table.mapAs({ value: 'close' }), 60)
       .series()
       .stroke('#71d3ff')
-    stockChart
-      .plot(0)
+      .tooltip(false)
+    candlestickPanel
       .sma(table.mapAs({ value: 'close' }), 200)
       .series()
       .stroke('#fddb48')
+      .tooltip(false)
 
     // 交易量
-    stockChart
-      .plot(1)
-      .legend(false)
-      .xAxis(false)
+    const volumePanel = stockChart.plot(1)
+    volumePanel.xAxis(false)
+    volumePanel.crosshair().yLabel(false)
+    volumePanel.legend().title(false)
+    volumePanel
       .column(table.mapAs({ value: 'volume' }))
-      .name('volume')
+      .name('交易量')
+      .tooltip(false)
 
     // MACD
-    const MACD = stockChart
-      .plot(2)
-      .legend(false)
-      .macd(table.mapAs({ value: 'close' }), 12, 26, 9)
-    MACD.macdSeries().stroke('#ad6eff')
-    MACD.signalSeries().stroke('#fba340')
-    MACD.histogramSeries().fill('#7dc0a2')
+    const MACDPanel = stockChart.plot(2)
+    const MACD = MACDPanel.macd(table.mapAs({ value: 'close' }), 12, 26, 9)
+    MACDPanel.xAxis(false)
+    MACDPanel.crosshair().yLabel(false)
+    MACDPanel.legend().title(false)
+    MACD.macdSeries()
+      .stroke('#ad6eff')
+      .tooltip(false)
+    MACD.signalSeries()
+      .stroke('#fba340')
+      .tooltip(false)
+    MACD.histogramSeries()
+      .fill('#7dc0a2')
+      .tooltip(false)
 
-    // 設定第一張圖表大小
-    stockChart.plot(0).bounds(0, '100%', '100%', 500)
+    // 設定第一區塊大小及位置
+    candlestickPanel.bounds(0, '100%', '100%', 500)
 
     // setting the stockChart title
     stockChart.title(`${this.stockName}(${this.stockCode})歷史走勢圖`)
@@ -98,19 +133,19 @@ export default {
     // Render the range picker into an instance of a stock stockChart
     anychart.ui
       .rangeSelector()
-      .zoomLabelText('Data Range:')
+      .zoomLabelText('區間:')
       .render(stockChart)
 
     // 隱藏時間 bar
     stockChart.scroller().enabled(false)
 
     // display the stockChart
-    stockChart.container('container')
-    stockChart.draw()
+    stockChart.container('container').draw()
 
     // 選擇時間長度
     stockChart.selectRange('Month', 3, 'last-date')
 
+    // 隱藏 loading
     preloader.visible(false)
   },
   methods: {
@@ -119,4 +154,20 @@ export default {
 }
 </script>
 
-<style></style>
+<style>
+.anychart-range-selector.anychart-range-selector-inside {
+  bottom: 10px;
+}
+.anychart-credits {
+  display: none;
+}
+
+#container {
+  width: 100%;
+  height: 800px;
+}
+
+.anychart-menu {
+  z-index: 1042;
+}
+</style>
