@@ -6,7 +6,7 @@ export default {
    ** Headers of the page
    */
   head: {
-    title: process.env.npm_package_name || '',
+    title: 'ScanTrader 實驗室',
     meta: [
       {
         charset: 'utf-8'
