@@ -1,10 +1,15 @@
 <template>
   <b-container class="my-5 py-3">
-    <b-tabs content-class="mt-3" lazy @activate-tab="showChart">
-      <b-tab title="即時走勢">
+    <b-tabs
+      v-model="currentTab"
+      content-class="mt-3"
+      lazy
+      @activate-tab="showChart"
+    >
+      <b-tab title="即時走勢" :disabled="$lodash.isNull(priceHistory.data)">
         <div id="container" class="position-relative"></div>
       </b-tab>
-      <b-tab title="技術指標" active>
+      <b-tab title="技術指標">
         <div class="mb-3 text-right">
           <b-button
             v-for="option in cycleOptions"
@@ -31,6 +36,7 @@ import { mapActions } from 'vuex'
 export default {
   data() {
     return {
+      currentTab: 1,
       priceHistory: {
         count: 0,
         data: null
@@ -52,11 +58,12 @@ export default {
           value: 'Month',
           text: '月線'
         }
-      ]
+      ],
+      prevClosePrice: null
     }
   },
   watch: {
-    cycle: 'getStockPriceData'
+    cycle: 'getStockPriceDataByK'
   },
   mounted() {
     this.showChart(1)
@@ -77,7 +84,7 @@ export default {
       this.preloader = this.$Anychart.ui.preloader()
       this.preloader.render(document.getElementById('container'))
     },
-    async getStockPriceData() {
+    async getStockPriceDataByK() {
       // 顯示 loading
       this.preloader.visible(true)
       const options = {
@@ -124,6 +131,34 @@ export default {
 
       // 隱藏 loading
       this.preloader.visible(false)
+    },
+    getStockPriceDataByP() {
+      const priceList = this.priceHistory.data.filter(
+        (item) => item.open === (this.prevClosePrice || item.open)
+      )
+      const newData = (priceList.length ? priceList : this.priceHistory.data)[
+        Math.floor(
+          Math.random() *
+            Math.floor(
+              (priceList.length ? priceList : this.priceHistory.data).length
+            )
+        )
+      ]
+
+      setTimeout(() => {
+        if (this.currentTab === 0) {
+          // 塞入資料源
+          this.dataTable.addData([
+            {
+              ...newData,
+              date: new Date().getTime()
+            }
+          ])
+          this.prevClosePrice =
+            this.$lodash.get(newData, 'close', 0) || this.prevClosePrice
+          this.getStockPriceDataByP()
+        }
+      }, 1000)
     },
     configureKChart() {
       // 設定 anyChart 樣式
@@ -277,17 +312,60 @@ export default {
       }
     },
     configurePChart() {
-      // console.log('12312')
+      const vm = this
+      // 設定 anyChart 樣式
+      this.stockChart.background().fill('#011f4b 0.2')
+
+      // 設定全域的 tooltip
+      this.stockChart.tooltip().titleFormat(function() {
+        return vm.$Anychart.format.dateTime(this.hoveredDate, 'HH:mm:ss')
+      })
+
+      // 走勢圖
+      const candlestickPanel = this.stockChart.plot(0)
+      candlestickPanel.legend().title(false)
+      candlestickPanel.crosshair().yLabel(false)
+      candlestickPanel.crosshair().xLabel(false)
+      candlestickPanel
+        .xAxis(false)
+        .candlestick(
+          this.dataTable.mapAs({
+            open: 'open',
+            high: 'high',
+            low: 'low',
+            close: 'close'
+          })
+        )
+        .fallingFill('#29b061')
+        .fallingStroke('#29b061')
+        .risingStroke('#fa3032')
+        .risingFill('#fa3032')
+        .name('台積電')
+        .tooltip()
+        .format(
+          '開盤價：{%open}\n最高價：{%high}\n最低價：{%low}\n收盤價：{%close}\n{%value}'
+        )
+        .titleFormat('{%value}{dateTimeFormat:MM-dd}')
+
+      // 設定第一區塊大小及位置
+      candlestickPanel.bounds(0, '100%', '100%', 300)
+
+      // setting the this.stockChart title
+      this.stockChart.title('模擬台積電(2330)即時走勢圖')
+
+      // display the this.stockChart
+      this.stockChart.container('container').draw()
     },
     async showChart(newTabIndex) {
       await this.$nextTick()
       if (this.stockChart) this.stockChart.dispose()
       this.initialChart()
       if (newTabIndex === 1) {
-        this.getStockPriceData().then(() => {
+        this.getStockPriceDataByK().then(() => {
           this.configureKChart()
         })
       } else {
+        this.getStockPriceDataByP()
         this.configurePChart()
       }
     }
