@@ -1,10 +1,10 @@
 <template>
   <b-container class="my-5 py-3">
-    <b-tabs content-class="mt-3" lazy>
+    <b-tabs content-class="mt-3" lazy @activate-tab="showChart">
       <b-tab title="即時走勢">
-        <div v-if="priceHistory" id="container"></div>
+        <div id="container" class="position-relative"></div>
       </b-tab>
-      <b-tab title="技術指標" active @click.prevent="selectCycle">
+      <b-tab title="技術指標" active>
         <div class="mb-3 text-right">
           <b-button
             v-for="option in cycleOptions"
@@ -19,7 +19,7 @@
             {{ option.text }}
           </b-button>
         </div>
-        <div v-if="priceHistory" id="container"></div>
+        <div id="container" class="position-relative"></div>
       </b-tab>
     </b-tabs>
   </b-container>
@@ -31,10 +31,13 @@ import { mapActions } from 'vuex'
 export default {
   data() {
     return {
-      priceHistory: null,
-      anyChart: {
-        preloader: null
+      priceHistory: {
+        count: 0,
+        data: null
       },
+      preloader: null,
+      stockChart: null,
+      dataTable: null,
       cycle: 'Day',
       cycleOptions: [
         {
@@ -53,37 +56,90 @@ export default {
     }
   },
   watch: {
-    cycle: 'selectCycle'
+    cycle: 'getStockPriceData'
   },
   mounted() {
-    this.anyChart.preloader = this.$Anychart.ui.preloader()
-    this.anyChart.preloader.render()
-    this.selectCycle()
+    this.showChart(1)
+  },
+  destroyed() {
+    if (this.stockChart) this.stockChart.dispose()
   },
   methods: {
     ...mapActions('api/jiashi', ['getStockPriceHistory']),
-    showKChart() {
-      // 塞入資料源
-      const datTable = this.$Anychart.data.table('date')
-      datTable.addData(this.priceHistory)
-
+    initialChart() {
       // 設定圖表類型
-      const stockChart = this.$Anychart.stock()
+      this.stockChart = this.$Anychart.stock()
 
+      // 定義資料格式
+      this.dataTable = this.$Anychart.data.table('date')
+
+      // 設定等待元件
+      this.preloader = this.$Anychart.ui.preloader()
+      this.preloader.render(document.getElementById('container'))
+    },
+    async getStockPriceData() {
+      // 顯示 loading
+      this.preloader.visible(true)
+      const options = {
+        StockID: 'AS2330',
+        Count: (new Date().getFullYear() - 1962) * 365
+      }
+      switch (this.cycle) {
+        case 'Day':
+          options.Period = 'D'
+          break
+        case 'Week':
+          options.Period = 'W'
+          break
+        case 'Month':
+          options.Period = 'M'
+          break
+      }
+
+      // 獲取資料源
+      this.priceHistory.data = await this.getStockPriceHistory(options)
+      if (this.priceHistory.error) return
+
+      // 移除舊資料
+      this.dataTable.removeFirst(this.priceHistory.count)
+      this.priceHistory.count = this.priceHistory.data.length
+
+      // 塞入資料源
+      this.dataTable.addData(this.priceHistory.data)
+
+      await this.$nextTick()
+
+      // 選擇時間長度
+      switch (this.cycle) {
+        case 'Day':
+          this.stockChart.selectRange('Day', 90, 'last-date')
+          break
+        case 'Week':
+          this.stockChart.selectRange('Week', 60, 'last-date')
+          break
+        case 'Month':
+          this.stockChart.selectRange('Month', 50, 'last-date')
+          break
+      }
+
+      // 隱藏 loading
+      this.preloader.visible(false)
+    },
+    configureKChart() {
       // 設定 anyChart 樣式
-      stockChart.background().fill('#011f4b 0.2')
+      this.stockChart.background().fill('#011f4b 0.2')
 
       // 設定全域的 tooltip
-      stockChart.tooltip().titleFormat('{%x}{type:date}')
+      this.stockChart.tooltip().titleFormat('{%x}{type:date}')
 
       // 走勢圖
-      const candlestickPanel = stockChart.plot(0)
+      const candlestickPanel = this.stockChart.plot(0)
       candlestickPanel.legend().title(false)
       candlestickPanel.crosshair().yLabel(false)
       candlestickPanel
         .xAxis(false)
         .candlestick(
-          datTable.mapAs({
+          this.dataTable.mapAs({
             open: 'open',
             high: 'high',
             low: 'low',
@@ -102,25 +158,25 @@ export default {
 
       // 在走勢圖加上 SMA
       candlestickPanel
-        .sma(datTable.mapAs({ value: 'close' }), 20)
+        .sma(this.dataTable.mapAs({ value: 'close' }), 20)
         .series()
         .stroke('#0e61cb')
       candlestickPanel
-        .sma(datTable.mapAs({ value: 'close' }), 60)
+        .sma(this.dataTable.mapAs({ value: 'close' }), 60)
         .series()
         .stroke('#71d3ff')
       candlestickPanel
-        .sma(datTable.mapAs({ value: 'close' }), 200)
+        .sma(this.dataTable.mapAs({ value: 'close' }), 200)
         .series()
         .stroke('#fddb48')
 
       // 交易量
-      const volumePanel = stockChart.plot(1)
+      const volumePanel = this.stockChart.plot(1)
       volumePanel.xAxis(false)
       volumePanel.crosshair().yLabel(false)
       volumePanel.legend().title(false)
       const volume5Ma = volumePanel.volumeMa(
-        datTable.mapAs({
+        this.dataTable.mapAs({
           open: 'open',
           high: 'high',
           low: 'low',
@@ -141,7 +197,7 @@ export default {
         .tooltip(false)
       volume5Ma.maSeries().tooltip(false)
       const volume20Ma = volumePanel.volumeMa(
-        datTable.mapAs({
+        this.dataTable.mapAs({
           open: 'open',
           high: 'high',
           low: 'low',
@@ -160,12 +216,12 @@ export default {
       volume20Ma.maSeries().tooltip(false)
 
       // KD
-      const KDPanel = stockChart.plot(2)
+      const KDPanel = this.stockChart.plot(2)
       KDPanel.xAxis(false)
       KDPanel.crosshair().yLabel(false)
       KDPanel.legend().title(false)
       const KD = KDPanel.stochastic(
-        datTable.mapAs({
+        this.dataTable.mapAs({
           high: 'high',
           low: 'low',
           close: 'close'
@@ -178,8 +234,13 @@ export default {
       KD.dSeries().tooltip(false)
 
       // MACD
-      const MACDPanel = stockChart.plot(3)
-      const MACD = MACDPanel.macd(datTable.mapAs({ value: 'close' }), 12, 26, 9)
+      const MACDPanel = this.stockChart.plot(3)
+      const MACD = MACDPanel.macd(
+        this.dataTable.mapAs({ value: 'close' }),
+        12,
+        26,
+        9
+      )
       MACDPanel.xAxis(false)
       MACDPanel.crosshair().yLabel(false)
       MACDPanel.legend().title(false)
@@ -196,51 +257,39 @@ export default {
       // 設定第一區塊大小及位置
       candlestickPanel.bounds(0, '100%', '100%', 300)
 
-      // setting the stockChart title
-      stockChart.title('台積電(2330)歷史走勢圖')
+      // setting the this.stockChart title
+      this.stockChart.title('台積電(2330)歷史走勢圖')
 
-      // display the stockChart
-      stockChart.container('container').draw()
+      // display the this.stockChart
+      this.stockChart.container('container').draw()
 
       // 選擇時間長度
       switch (this.cycle) {
         case 'Day':
-          stockChart.selectRange('Day', 90, 'last-date')
+          this.stockChart.selectRange('Day', 90, 'last-date')
           break
         case 'Week':
-          stockChart.selectRange('Week', 60, 'last-date')
+          this.stockChart.selectRange('Week', 60, 'last-date')
           break
         case 'Month':
-          stockChart.selectRange('Month', 50, 'last-date')
+          this.stockChart.selectRange('Month', 50, 'last-date')
           break
       }
     },
-    async selectCycle() {
-      // 顯示 loading
-      this.anyChart.preloader.visible(true)
-      this.priceHistory = null
-      const options = {
-        StockID: 'AS2330',
-        Count: (new Date().getFullYear() - 1962) * 365
-      }
-      switch (this.cycle) {
-        case 'Day':
-          options.Period = 'D'
-          break
-        case 'Week':
-          options.Period = 'W'
-          break
-        case 'Month':
-          options.Period = 'M'
-          break
-      }
-      // 獲取資料源
-      this.priceHistory = await this.getStockPriceHistory(options)
+    configurePChart() {
+      // console.log('12312')
+    },
+    async showChart(newTabIndex) {
       await this.$nextTick()
-      if (this.priceHistory.error) return
-      this.showKChart()
-      // 隱藏 loading
-      this.anyChart.preloader.visible(false)
+      if (this.stockChart) this.stockChart.dispose()
+      this.initialChart()
+      if (newTabIndex === 1) {
+        this.getStockPriceData().then(() => {
+          this.configureKChart()
+        })
+      } else {
+        this.configurePChart()
+      }
     }
   }
 }
