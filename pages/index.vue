@@ -166,6 +166,7 @@ export default {
 
       // 設定全域的 tooltip
       this.stockChart.tooltip().titleFormat('{%x}{type:date}')
+      this.stockChart.crosshair().xLabel(false)
 
       // 走勢圖
       const candlestickPanel = this.stockChart.plot(0)
@@ -210,6 +211,16 @@ export default {
       volumePanel.xAxis(false)
       volumePanel.crosshair().yLabel(false)
       volumePanel.legend().title(false)
+      volumePanel
+        .yAxis()
+        .labels()
+        .format(function() {
+          return this.value.toString().length > 3
+            ? `${this.value
+                .toString()
+                .slice(0, this.value.toString().length - 3)}k`
+            : this.value
+        })
       const volume5Ma = volumePanel.volumeMa(
         this.dataTable.mapAs({
           open: 'open',
@@ -276,7 +287,7 @@ export default {
         26,
         9
       )
-      MACDPanel.xAxis(false)
+      // MACDPanel.xAxis(false)
       MACDPanel.crosshair().yLabel(false)
       MACDPanel.legend().title(false)
       MACD.macdSeries()
