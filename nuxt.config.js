@@ -45,6 +45,10 @@ export default {
   plugins: [
     {
       src: '~/plugins/vue-lodash'
+    },
+    {
+      src: '~/plugins/vue-anychart',
+      mode: 'client'
     }
   ],
   /*
