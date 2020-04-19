@@ -67,6 +67,7 @@ export default {
   },
   mounted() {
     this.showChart(1)
+    console.log('213123')
   },
   destroyed() {
     if (this.stockChart) this.stockChart.dispose()
