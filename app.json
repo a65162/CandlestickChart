@@ -1,8 +1,13 @@
 {
   "environments": {
     "test": {
+      "formation": {
+        "test": {
+          "quantity": 1,
+          "size": "free"
+        }
+      },
       "scripts": {
-        "test-setup": "npm install eslint",
         "test": "npm run lint:js"
       }
     }
