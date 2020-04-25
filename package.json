@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "DEBUG='nuxt:*' nuxt -o",
     "build": "nuxt build",
+    "heroku-postbuild": "npm run test && npm run build",
     "start": "DEBUG='nuxt:*' nuxt start",
     "generate": "nuxt generate",
     "lint:js": "eslint --ext .js,.vue --ignore-path .gitignore .",
