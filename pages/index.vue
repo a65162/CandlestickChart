@@ -194,6 +194,14 @@ export default {
 
       // 在走勢圖加上 SMA
       candlestickPanel
+        .sma(this.dataTable.mapAs({ value: 'close' }), 5)
+        .series()
+        .stroke('#63f1da')
+      candlestickPanel
+        .sma(this.dataTable.mapAs({ value: 'close' }), 10)
+        .series()
+        .stroke('#ad6efe')
+      candlestickPanel
         .sma(this.dataTable.mapAs({ value: 'close' }), 20)
         .series()
         .stroke('#0e61cb')
