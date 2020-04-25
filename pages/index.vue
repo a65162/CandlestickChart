@@ -171,6 +171,7 @@ export default {
       // 走勢圖
       const candlestickPanel = this.stockChart.plot(0)
       candlestickPanel.legend().title(false)
+      // .itemsLayout('horizontal-expandable')
       candlestickPanel.crosshair().yLabel(false)
       candlestickPanel
         .xAxis(false)
@@ -187,9 +188,11 @@ export default {
         .risingStroke('#fa3032')
         .risingFill('#fa3032')
         .name('台積電')
-        .tooltip()
+        .tooltip(false)
+        .legendItem()
+        .iconType('risingfalling')
         .format(
-          '開盤價：{%open}\n最高價：{%high}\n最低價：{%low}\n收盤價：{%close}\n{%value}'
+          '{%seriesName}: (開：{%open}; 高：{%high}; 低：{%low}; 收：{%close})'
         )
 
       // 在走勢圖加上 SMA
@@ -197,22 +200,27 @@ export default {
         .sma(this.dataTable.mapAs({ value: 'close' }), 5)
         .series()
         .stroke('#63f1da')
+        .tooltip(false)
       candlestickPanel
         .sma(this.dataTable.mapAs({ value: 'close' }), 10)
         .series()
         .stroke('#ad6efe')
+        .tooltip(false)
       candlestickPanel
         .sma(this.dataTable.mapAs({ value: 'close' }), 20)
         .series()
         .stroke('#0e61cb')
+        .tooltip(false)
       candlestickPanel
         .sma(this.dataTable.mapAs({ value: 'close' }), 60)
         .series()
         .stroke('#71d3ff')
+        .tooltip(false)
       candlestickPanel
         .sma(this.dataTable.mapAs({ value: 'close' }), 200)
         .series()
         .stroke('#fddb48')
+        .tooltip(false)
 
       // 交易量
       const volumePanel = this.stockChart.plot(1)
