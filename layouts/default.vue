@@ -10,8 +10,24 @@
 
         <b-collapse id="nav-collapse" is-nav>
           <b-navbar-nav>
-            <b-nav-item to="/">K 線圖</b-nav-item>
-            <b-nav-item to="/">動態牆</b-nav-item>
+            <b-nav-item
+              :to="{
+                name: 'anyChartStock'
+              }"
+              >anyChart Stock</b-nav-item
+            >
+            <b-nav-item
+              :to="{
+                name: 'highChartStock'
+              }"
+              >highCharts Stock</b-nav-item
+            >
+            <b-nav-item
+              :to="{
+                name: 'index'
+              }"
+              >動態牆</b-nav-item
+            >
           </b-navbar-nav>
         </b-collapse>
       </b-navbar>
