@@ -49,6 +49,10 @@ export default {
     {
       src: '~/plugins/vue-anychart',
       mode: 'client'
+    },
+    {
+      src: '~/plugins/vue-highcharts',
+      mode: 'client'
     }
   ],
   /*
