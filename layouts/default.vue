@@ -24,7 +24,7 @@
             >
             <b-nav-item
               :to="{
-                name: 'index'
+                name: 'activity'
               }"
               >動態牆</b-nav-item
             >
