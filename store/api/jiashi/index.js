@@ -16,14 +16,12 @@ export const actions = {
           .toArray(res.data.querySelectorAll('Row'))
           .map((row) => {
             return {
-              date: new Date(
-                row.getAttribute('V1').replace(/\//g, '-')
-              ).getTime(),
-              open: row.getAttribute('V4'),
-              high: row.getAttribute('V5'),
-              low: row.getAttribute('V6'),
-              close: row.getAttribute('V7'),
-              volume: row.getAttribute('V8')
+              x: new Date(row.getAttribute('V1').replace(/\//g, '-')).getTime(),
+              open: Number(row.getAttribute('V4')),
+              high: Number(row.getAttribute('V5')),
+              low: Number(row.getAttribute('V6')),
+              close: Number(row.getAttribute('V7')),
+              volume: Number(row.getAttribute('V8'))
             }
           })
       })

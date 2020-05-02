@@ -78,7 +78,7 @@ export default {
       this.stockChart = this.$Anychart.stock()
 
       // 定義資料格式
-      this.dataTable = this.$Anychart.data.table('date')
+      this.dataTable = this.$Anychart.data.table('x')
 
       // 設定等待元件
       this.preloader = this.$Anychart.ui.preloader()
@@ -151,7 +151,7 @@ export default {
           this.dataTable.addData([
             {
               ...newData,
-              date: new Date().getTime()
+              x: new Date().getTime()
             }
           ])
           this.prevClosePrice =

@@ -14,13 +14,13 @@
               :to="{
                 name: 'anyChartStock'
               }"
-              >anyChart Stock</b-nav-item
+              >anyChart</b-nav-item
             >
             <b-nav-item
               :to="{
                 name: 'highChartStock'
               }"
-              >highCharts Stock</b-nav-item
+              >highCharts</b-nav-item
             >
             <b-nav-item
               :to="{
