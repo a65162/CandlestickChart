@@ -1,12 +1,31 @@
 <template>
-  <b-container>
-    <client-only>
-      <highcharts
-        :callback="chartLoaded"
-        :constructor-type="'stockChart'"
-        :options="chartOptions"
-      ></highcharts>
-    </client-only>
+  <b-container class="my-5 py-3">
+    <b-tabs v-model="currentTab" content-class="mt-3" lazy>
+      <b-tab title="即時走勢"> </b-tab>
+      <b-tab title="技術指標">
+        <!-- <div class="mb-3 text-right">
+          <b-button
+            v-for="option in cycleOptions"
+            :key="option.value"
+            :disabled="cycle === option.value"
+            class="ml-3 cycleSwitch"
+            :class="{
+              'cycleSwitch--active': cycle === option.value
+            }"
+            @click.prevent="cycle = option.value"
+          >
+            {{ option.text }}
+          </b-button>
+        </div> -->
+        <client-only>
+          <highcharts
+            :callback="chartLoaded"
+            :constructor-type="'stockChart'"
+            :options="chartOptions"
+          ></highcharts>
+        </client-only>
+      </b-tab>
+    </b-tabs>
   </b-container>
 </template>
 
@@ -16,14 +35,18 @@ import { mapActions } from 'vuex'
 export default {
   data() {
     return {
+      currentTab: 1,
       chartOptions: {
         chart: {
-          backgroundColor: '#011f4b',
+          backgroundColor: 'rgba(1, 31, 75, 0.2)',
           borderColor: '#011f4b',
           height: 800
         },
         rangeSelector: {
           enabled: false
+        },
+        xAxis: {
+          range: 3 * 30 * 24 * 3600 * 1000 // three months data
         },
         yAxis: [
           {
@@ -36,7 +59,15 @@ export default {
             labels: {
               align: 'left'
             },
-            top: '50%',
+            top: '53%',
+            height: '12%',
+            offset: 0
+          },
+          {
+            labels: {
+              align: 'left'
+            },
+            top: '68%',
             height: '15%',
             offset: 0
           },
@@ -44,16 +75,8 @@ export default {
             labels: {
               align: 'left'
             },
-            top: '65%',
-            height: '10%',
-            offset: 0
-          },
-          {
-            labels: {
-              align: 'left'
-            },
-            top: '75%',
-            height: '25%',
+            top: '86%',
+            height: '14%',
             offset: 0
           }
         ],
@@ -97,8 +120,7 @@ export default {
             data: [],
             turboThreshold: 0,
             upColor: '#fa3032',
-            color: '#29b061',
-            dashStyle: 'Dash'
+            color: '#29b061'
           },
           {
             type: 'sma',
@@ -164,9 +186,15 @@ export default {
             name: 'KD指數',
             linkedTo: 'candlestick-2330',
             yAxis: 2,
-            params: {
-              period: [9, 9]
+            color: '#64b5f6',
+            smoothedLine: {
+              styles: {
+                lineColor: '#1976d3'
+              }
             }
+            // params: {
+            //   period: [9, 9]
+            // }
           },
           {
             type: 'macd',
@@ -175,7 +203,17 @@ export default {
             linkedTo: 'candlestick-2330',
             yAxis: 3,
             color: '#fa3032',
-            negativeColor: '#29b061'
+            negativeColor: '#29b061',
+            macdLine: {
+              styles: {
+                lineColor: '#b073fe'
+              }
+            },
+            signalLine: {
+              styles: {
+                lineColor: '#ffa544'
+              }
+            }
           }
         ]
       }
@@ -183,7 +221,8 @@ export default {
   },
   methods: {
     ...mapActions('api/jiashi', ['getStockPriceHistory']),
-    chartLoaded() {
+    chartLoaded(chart) {
+      chart.showLoading()
       this.getStockPriceHistory({
         StockID: 'AS2330',
         Count: (new Date().getFullYear() - 1962) * 365,
@@ -205,6 +244,7 @@ export default {
               }
             })
           : []
+        chart.hideLoading()
       })
     }
   }
