@@ -42,47 +42,69 @@ export default {
           borderColor: '#011f4b',
           height: 800
         },
+        // plotOptions: {
+        //   series: {
+        //     events: {
+        //       mouseOver(point, a) {
+        //         console.log(a)
+        //       }
+        //     }
+        //   }
+        // },
         rangeSelector: {
           enabled: false
         },
         xAxis: {
-          range: 3 * 30 * 24 * 3600 * 1000 // three months data
+          range: 3 * 30 * 24 * 3600 * 1000, // three months data
+          crosshair: {
+            dashStyle: 'LongDash',
+            color: 'rgba(230, 230, 230, 0.5)'
+          }
         },
         yAxis: [
           {
             labels: {
               align: 'left'
             },
-            height: '50%'
+            height: '55%',
+            offset: 0,
+            gridLineDashStyle: 'LongDash',
+            gridLineColor: 'rgba(230, 230, 230, 0.4)'
           },
           {
             labels: {
               align: 'left'
             },
-            top: '53%',
-            height: '12%',
-            offset: 0
-          },
-          {
-            labels: {
-              align: 'left'
-            },
-            top: '68%',
+            top: '55%',
             height: '15%',
-            offset: 0
+            offset: 0,
+            gridLineDashStyle: 'LongDash',
+            gridLineColor: 'rgba(230, 230, 230, 0.4)'
           },
           {
             labels: {
               align: 'left'
             },
-            top: '86%',
-            height: '14%',
-            offset: 0
+            top: '70%',
+            height: '15%',
+            offset: 0,
+            gridLineDashStyle: 'LongDash',
+            gridLineColor: 'rgba(230, 230, 230, 0.4)'
+          },
+          {
+            labels: {
+              align: 'left'
+            },
+            top: '85%',
+            height: '15%',
+            offset: 0,
+            gridLineDashStyle: 'LongDash',
+            gridLineColor: 'rgba(230, 230, 230, 0.4)'
           }
         ],
         tooltip: {
-          // shape: 'square',
-          // headerShape: 'callout',
+          shape: 'square',
+          headerShape: 'callout',
           borderWidth: 0,
           shadow: false,
           positioner(width, height, point) {
@@ -119,7 +141,9 @@ export default {
             name: '台積電歷史走勢圖',
             data: [],
             turboThreshold: 0,
+            upLineColor: '#fa3032',
             upColor: '#fa3032',
+            lineColor: '#29b061',
             color: '#29b061'
           },
           {
@@ -130,7 +154,8 @@ export default {
             color: '#ffec71',
             params: {
               period: 5
-            }
+            },
+            lineWidth: 1
           },
           {
             type: 'sma',
@@ -140,7 +165,8 @@ export default {
             color: '#ff7d8b',
             params: {
               period: 10
-            }
+            },
+            lineWidth: 1
           },
           {
             type: 'sma',
@@ -150,7 +176,8 @@ export default {
             color: '#4b96eb',
             params: {
               period: 20
-            }
+            },
+            lineWidth: 1
           },
           {
             type: 'sma',
@@ -160,7 +187,8 @@ export default {
             color: '#7bff86',
             params: {
               period: 60
-            }
+            },
+            lineWidth: 1
           },
           {
             type: 'sma',
@@ -170,7 +198,8 @@ export default {
             color: '#fddb48',
             params: {
               period: 200
-            }
+            },
+            lineWidth: 1
           },
           {
             type: 'column',
@@ -183,7 +212,7 @@ export default {
           {
             type: 'stochastic',
             id: 'KD',
-            name: 'KD指數',
+            name: 'KD',
             linkedTo: 'candlestick-2330',
             yAxis: 2,
             color: '#64b5f6',
@@ -191,15 +220,14 @@ export default {
               styles: {
                 lineColor: '#1976d3'
               }
+            },
+            params: {
+              periods: [9, 9]
             }
-            // params: {
-            //   period: [9, 9]
-            // }
           },
           {
             type: 'macd',
             id: 'macd',
-            name: 'MACD',
             linkedTo: 'candlestick-2330',
             yAxis: 3,
             color: '#fa3032',
