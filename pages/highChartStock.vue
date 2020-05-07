@@ -37,22 +37,25 @@ export default {
     return {
       currentTab: 1,
       chartOptions: {
+        credits: {
+          enabled: false
+        },
         chart: {
           backgroundColor: 'rgba(1, 31, 75, 0.2)',
           borderColor: '#011f4b',
           height: 800
+          // zoomType: 'Y'
         },
-        // plotOptions: {
-        //   series: {
-        //     events: {
-        //       mouseOver(point, a) {
-        //         console.log(a)
-        //       }
-        //     }
-        //   }
-        // },
         rangeSelector: {
           enabled: false
+        },
+        plotOptions: {
+          sma: {
+            marker: {
+              enabled: false
+            },
+            lineWidth: 1
+          }
         },
         xAxis: {
           range: 3 * 30 * 24 * 3600 * 1000, // three months data
@@ -133,6 +136,9 @@ export default {
 
             return position
           }
+          // formatter() {
+          //   console.log(this)
+          // }
         },
         series: [
           {
@@ -145,6 +151,9 @@ export default {
             upColor: '#fa3032',
             lineColor: '#29b061',
             color: '#29b061'
+            // dataLabels: {
+            //   enabled: true
+            // }
           },
           {
             type: 'sma',
@@ -154,8 +163,7 @@ export default {
             color: '#ffec71',
             params: {
               period: 5
-            },
-            lineWidth: 1
+            }
           },
           {
             type: 'sma',
@@ -165,8 +173,7 @@ export default {
             color: '#ff7d8b',
             params: {
               period: 10
-            },
-            lineWidth: 1
+            }
           },
           {
             type: 'sma',
@@ -176,8 +183,7 @@ export default {
             color: '#4b96eb',
             params: {
               period: 20
-            },
-            lineWidth: 1
+            }
           },
           {
             type: 'sma',
@@ -187,8 +193,7 @@ export default {
             color: '#7bff86',
             params: {
               period: 60
-            },
-            lineWidth: 1
+            }
           },
           {
             type: 'sma',
@@ -198,8 +203,7 @@ export default {
             color: '#fddb48',
             params: {
               period: 200
-            },
-            lineWidth: 1
+            }
           },
           {
             type: 'column',
@@ -273,6 +277,17 @@ export default {
             })
           : []
         chart.hideLoading()
+        // chart.renderer
+        //   .rect(200, 300, 50, 50)
+        //   .attr({
+        //     fill: '#f44242',
+        //     stroke: 'green',
+        //     'stroke-width': 5,
+        //     zIndex: 99
+        //   })
+        //   .add()
+        // console.log(chart.get('sma-5'))
+        // console.log(chart.renderer)
       })
     }
   }
