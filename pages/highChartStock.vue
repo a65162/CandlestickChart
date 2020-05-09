@@ -44,7 +44,6 @@ export default {
           backgroundColor: 'rgba(1, 31, 75, 0.2)',
           borderColor: '#011f4b',
           height: 800
-          // zoomType: 'Y'
         },
         rangeSelector: {
           enabled: false
@@ -55,6 +54,15 @@ export default {
               enabled: false
             },
             lineWidth: 1
+          }
+        },
+        title: {
+          text: '台積電 (2330) 日K線',
+          align: 'left',
+          style: {
+            color: '#ffffff',
+            fontSize: '30px',
+            fontWeight: '500'
           }
         },
         xAxis: {
@@ -69,9 +77,9 @@ export default {
             labels: {
               align: 'left'
             },
-            height: '55%',
+            top: '15%',
+            height: '40%',
             offset: 0,
-            gridLineDashStyle: 'LongDash',
             gridLineColor: 'rgba(230, 230, 230, 0.4)'
           },
           {
@@ -81,8 +89,8 @@ export default {
             top: '55%',
             height: '15%',
             offset: 0,
-            gridLineDashStyle: 'LongDash',
-            gridLineColor: 'rgba(230, 230, 230, 0.4)'
+            gridLineColor: 'rgba(230, 230, 230, 0.4)',
+            gridLineWidth: 0
           },
           {
             labels: {
@@ -91,8 +99,8 @@ export default {
             top: '70%',
             height: '15%',
             offset: 0,
-            gridLineDashStyle: 'LongDash',
-            gridLineColor: 'rgba(230, 230, 230, 0.4)'
+            gridLineColor: 'rgba(230, 230, 230, 0.4)',
+            gridLineWidth: 0
           },
           {
             labels: {
@@ -101,50 +109,15 @@ export default {
             top: '85%',
             height: '15%',
             offset: 0,
-            gridLineDashStyle: 'LongDash',
-            gridLineColor: 'rgba(230, 230, 230, 0.4)'
+            gridLineColor: 'rgba(230, 230, 230, 0.4)',
+            gridLineWidth: 0
           }
         ],
-        tooltip: {
-          shape: 'square',
-          headerShape: 'callout',
-          borderWidth: 0,
-          shadow: false,
-          positioner(width, height, point) {
-            const chart = this.chart
-            let position
-
-            if (point.isHeader) {
-              position = {
-                x: Math.max(
-                  // Left side limit
-                  chart.plotLeft,
-                  Math.min(
-                    point.plotX + chart.plotLeft - width / 2,
-                    // Right side limit
-                    chart.chartWidth - width - chart.marginRight
-                  )
-                ),
-                y: point.plotY
-              }
-            } else {
-              position = {
-                x: point.series.chart.plotLeft,
-                y: point.series.yAxis.top - chart.plotTop
-              }
-            }
-
-            return position
-          }
-          // formatter() {
-          //   console.log(this)
-          // }
-        },
         series: [
           {
             type: 'candlestick',
             id: 'candlestick-2330',
-            name: '台積電歷史走勢圖',
+            name: 'candlestick(2330)',
             data: [],
             turboThreshold: 0,
             upLineColor: '#fa3032',
@@ -219,10 +192,10 @@ export default {
             name: 'KD',
             linkedTo: 'candlestick-2330',
             yAxis: 2,
-            color: '#64b5f6',
+            color: 'rgb(255, 125, 139)',
             smoothedLine: {
               styles: {
-                lineColor: '#1976d3'
+                lineColor: 'rgb(75, 150, 235)'
               }
             },
             params: {
@@ -254,12 +227,13 @@ export default {
   methods: {
     ...mapActions('api/jiashi', ['getStockPriceHistory']),
     chartLoaded(chart) {
+      const vm = this
       chart.showLoading()
       this.getStockPriceHistory({
         StockID: 'AS2330',
         Count: (new Date().getFullYear() - 1962) * 365,
         Period: 'D'
-      }).then((data) => {
+      }).then(async (data) => {
         const candlestick = this.chartOptions.series.find(
           (series) => series.type === 'candlestick'
         )
@@ -276,18 +250,223 @@ export default {
               }
             })
           : []
+        await this.$nextTick()
+
+        // 客製化
+        chart.renderer
+          .text('開：', 10, 80)
+          .css({
+            color: 'white',
+            fontSize: '18px'
+          })
+          .add()
+        chart.openPrice = chart.renderer
+          .text('', 45, 80)
+          .css({
+            color: '#f45651',
+            fontSize: '18px'
+          })
+          .add()
+        chart.renderer
+          .text('高：', 110, 80)
+          .css({
+            color: 'white',
+            fontSize: '18px'
+          })
+          .add()
+        chart.highPrice = chart.renderer
+          .text('', 145, 80)
+          .css({
+            color: '#f45651',
+            fontSize: '18px'
+          })
+          .add()
+        chart.renderer
+          .text('低：', 210, 80)
+          .css({
+            color: 'white',
+            fontSize: '18px'
+          })
+          .add()
+        chart.lowPrice = chart.renderer
+          .text('', 245, 80)
+          .css({
+            color: '#45c46e',
+            fontSize: '18px'
+          })
+          .add()
+        chart.renderer
+          .text('收：', 310, 80)
+          .css({
+            color: 'white',
+            fontSize: '18px'
+          })
+          .add()
+        chart.closePrice = chart.renderer
+          .text('', 345, 80)
+          .css({
+            color: '#45c46e',
+            fontSize: '18px'
+          })
+          .add()
+        chart['5ma'] = chart.renderer
+          .text('5MA：', 10, 120)
+          .css({
+            color: '#ffec71',
+            fontSize: '18px'
+          })
+          .add()
+        chart['10ma'] = chart.renderer
+          .text('10MA：', 145, 120)
+          .css({
+            color: '#ff7d8b',
+            fontSize: '18px'
+          })
+          .add()
+        chart['20ma'] = chart.renderer
+          .text('20MA：', 295, 120)
+          .css({
+            color: '#4b96eb',
+            fontSize: '18px'
+          })
+          .add()
+        chart['60ma'] = chart.renderer
+          .text('10MA：', 445, 120)
+          .css({
+            color: '#7bff86',
+            fontSize: '18px'
+          })
+          .add()
+        chart['200ma'] = chart.renderer
+          .text('10MA：', 595, 120)
+          .css({
+            color: '#fddb48',
+            fontSize: '18px'
+          })
+          .add()
+        chart.volume = chart.renderer
+          .text('成交量：', 10, 430)
+          .css({
+            color: 'white',
+            fontSize: '16px'
+          })
+          .add()
+        chart.K = chart.renderer
+          .text('K9：', 10, 520)
+          .css({
+            color: 'rgb(255, 125, 139)',
+            fontSize: '16px'
+          })
+          .add()
+        chart.D = chart.renderer
+          .text('D9：', 110, 520)
+          .css({
+            color: 'rgb(75, 150, 235)',
+            fontSize: '16px'
+          })
+          .add()
+
+        chart.options.tooltip.formatter = function() {
+          const candlestickPoint = this.points.find(
+            (point) => point.series.name === 'candlestick(2330)'
+          )
+          const fiveMA = this.points.find(
+            (point) => point.series.name === 'ma(5)'
+          )
+          const tenMA = this.points.find(
+            (point) => point.series.name === 'ma(10)'
+          )
+          const twentyMA = this.points.find(
+            (point) => point.series.name === 'ma(20)'
+          )
+          const sixtyMA = this.points.find(
+            (point) => point.series.name === 'ma(60)'
+          )
+          const twoHundredMA = this.points.find(
+            (point) => point.series.name === 'ma(200)'
+          )
+          const volume = this.points.find(
+            (point) => point.series.name === '成交量'
+          )
+          const KD = this.points.find((point) => point.series.name === 'KD')
+
+          const { open, high, low, close } = vm.$lodash.get(
+            candlestickPoint,
+            'point',
+            {
+              open: 0,
+              high: 0,
+              low: 0,
+              close: 0
+            }
+          )
+          const { y: fiveMAPrice } = vm.$lodash.get(fiveMA, 'point', {
+            y: 0
+          })
+          const { y: tenMAPrice } = vm.$lodash.get(tenMA, 'point', {
+            y: 0
+          })
+          const { y: twentyMAPrice } = vm.$lodash.get(twentyMA, 'point', {
+            y: 0
+          })
+          const { y: sixtyMAPrice } = vm.$lodash.get(sixtyMA, 'point', {
+            y: 0
+          })
+          const { y: twoHundredMAPrice } = vm.$lodash.get(
+            twoHundredMA,
+            'point',
+            {
+              y: 0
+            }
+          )
+          const { y: volumeData } = vm.$lodash.get(volume, 'point', {
+            y: 0
+          })
+          const { y: K, smoothed: D } = vm.$lodash.get(KD, 'point', {
+            y: 0,
+            smoothed: 0
+          })
+
+          chart.openPrice.attr({
+            text: open
+          })
+          chart.highPrice.attr({
+            text: high
+          })
+          chart.lowPrice.attr({
+            text: low
+          })
+          chart.closePrice.attr({
+            text: close
+          })
+          chart['5ma'].attr({
+            text: `5MA：${fiveMAPrice.toFixed(1)}`
+          })
+          chart['10ma'].attr({
+            text: `10MA：${tenMAPrice.toFixed(1)}`
+          })
+          chart['20ma'].attr({
+            text: `20MA：${twentyMAPrice.toFixed(1)}`
+          })
+          chart['60ma'].attr({
+            text: `60MA：${sixtyMAPrice.toFixed(1)}`
+          })
+          chart['200ma'].attr({
+            text: `200MA：${twoHundredMAPrice.toFixed(1)}`
+          })
+          chart.volume.attr({
+            text: `成交量：${volumeData.toLocaleString()}`
+          })
+          chart.K.attr({
+            text: `K9：${K.toFixed(2)}`
+          })
+          chart.D.attr({
+            text: `D9：${D.toFixed(2)}`
+          })
+          return ''
+        }
+        this.$lodash.last(chart.series[0].points).onMouseOver()
         chart.hideLoading()
-        // chart.renderer
-        //   .rect(200, 300, 50, 50)
-        //   .attr({
-        //     fill: '#f44242',
-        //     stroke: 'green',
-        //     'stroke-width': 5,
-        //     zIndex: 99
-        //   })
-        //   .add()
-        // console.log(chart.get('sma-5'))
-        // console.log(chart.renderer)
       })
     }
   }
