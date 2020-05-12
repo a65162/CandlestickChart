@@ -2,7 +2,7 @@
 export default {
   middleware({ redirect }) {
     redirect({
-      name: 'anyChartStock'
+      name: 'highChartStock'
     })
   }
 }

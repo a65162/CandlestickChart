@@ -125,7 +125,19 @@ export default {
             lineColor: '#29b061',
             color: '#29b061'
             // dataLabels: {
-            //   enabled: true
+            //   enabled: true,
+            //   filter: {
+            //     operator: '===',
+            //     property: 'x',
+            //     value: 1586995200000
+            //   },
+            //   useHTML: true,
+            //   formatter() {
+            //     console.log(this)
+            //     return '<img src="https://storage.googleapis.com/quants-images-prod/scantrader/upload/0164aa901d8d00003912000000000000.png/>'
+            //   }
+            //   // format:
+            //   //   '<img src="https://storage.googleapis.com/quants-images-prod/scantrader/upload/0164aa901d8d00003912000000000000.png/>'
             // }
           },
           {
@@ -246,7 +258,7 @@ export default {
               return {
                 x: item.x,
                 y: item.volume,
-                color: item.open > item.close ? '#fa3032' : '#29b061'
+                color: item.open < item.close ? '#fa3032' : '#29b061'
               }
             })
           : []
