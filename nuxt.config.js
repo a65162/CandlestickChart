@@ -53,6 +53,10 @@ export default {
     {
       src: '~/plugins/vue-highcharts',
       mode: 'client'
+    },
+    {
+      src: '~/plugins/vue-draggable.js',
+      mode: 'client'
     }
   ],
   /*

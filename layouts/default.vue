@@ -10,23 +10,31 @@
 
         <b-collapse id="nav-collapse" is-nav>
           <b-navbar-nav>
-            <b-nav-item
-              :to="{
-                name: 'anyChartStock'
-              }"
-              >anyChart</b-nav-item
-            >
-            <b-nav-item
-              :to="{
-                name: 'highChartStock'
-              }"
-              >highCharts</b-nav-item
-            >
+            <b-nav-item-dropdown text="圖表" left>
+              <b-dropdown-item
+                :to="{
+                  name: 'anyChartStock'
+                }"
+                >anyChart</b-dropdown-item
+              >
+              <b-dropdown-item
+                :to="{
+                  name: 'highChartStock'
+                }"
+                >highCharts</b-dropdown-item
+              >
+            </b-nav-item-dropdown>
             <b-nav-item
               :to="{
                 name: 'activity'
               }"
               >動態牆</b-nav-item
+            >
+            <b-nav-item
+              :to="{
+                name: 'draggableTable'
+              }"
+              >Draggable Table</b-nav-item
             >
           </b-navbar-nav>
         </b-collapse>
