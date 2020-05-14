@@ -57,6 +57,10 @@ export default {
     {
       src: '~/plugins/vue-draggable.js',
       mode: 'client'
+    },
+    {
+      src: '~/plugins/vue-json-views',
+      mode: 'client'
     }
   ],
   /*
@@ -81,6 +85,9 @@ export default {
     '@nuxtjs/dotenv',
     '@nuxtjs/proxy'
   ],
+  bootstrapVue: {
+    icons: true // Install the IconsPlugin (in addition to BootStrapVue plugin
+  },
   /*
    ** Axios module configuration
    ** See https://axios.nuxtjs.org/options
