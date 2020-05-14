@@ -5,7 +5,7 @@
         <b-thead>
           <b-tr>
             <b-th v-for="field in fields" :key="field" v-text="field" />
-            <b-th v-text="''" />
+            <b-th v-text="'操作'" />
           </b-tr>
         </b-thead>
         <draggable
@@ -20,12 +20,12 @@
             class="draggableTr"
           >
             <b-td v-for="field in fields" :key="field" class="align-middle">
-              <template v-if="field !== 'value'">
+              <template>
                 {{ dragItem[field] }}
               </template>
-              <template v-else>
+              <!-- <template v-else>
                 <b-input v-model="dragItem[field]"></b-input>
-              </template>
+              </template> -->
             </b-td>
             <b-td class="align-middle">
               <b-icon class="draggableItem" icon="tools"> </b-icon>
@@ -36,7 +36,7 @@
     </client-only>
     <b-row>
       <b-col cols="4">
-        <h4>更新有更動的資料（{{ onlyUpdateModfiedItems.length }}）：</h4>
+        <h4>只更新有排序變更的資料（{{ onlyUpdateModfiedItems.length }}）：</h4>
         <json-view
           :data="onlyUpdateModfiedItems"
           :deep="2"
@@ -44,7 +44,7 @@
         ></json-view>
       </b-col>
       <b-col cols="4">
-        <h4>更新全部資料</h4>
+        <h4>任何一筆資料有排序變更就更新全部資料：</h4>
         <json-view :data="updateAllItems" :deep="2" theme="vs-code"></json-view>
       </b-col>
       <b-col v-if="items" cols="4">
@@ -73,8 +73,20 @@ export default {
       )
     },
     updateAllItems() {
-      return !this.$lodash.isEqual(this.dragItems, this.items)
-        ? this.dragItems
+      return !this.$lodash.isEqual(
+        this.$lodash.cloneDeep(this.dragItems || []).map((dragitem) => {
+          delete dragitem.order
+          return dragitem
+        }),
+        this.$lodash.cloneDeep(this.items || []).map((item) => {
+          delete item.order
+          return item
+        })
+      )
+        ? this.$lodash.cloneDeep(this.dragItems || []).map((dragitem) => {
+            delete dragitem.order
+            return dragitem
+          })
         : []
     }
   },
