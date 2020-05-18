@@ -25,6 +25,15 @@
           ></highcharts>
         </client-only>
       </b-tab>
+      <b-tab title="關注清單">
+        <client-only>
+          <highcharts
+            :callback="chartLoaded2"
+            :constructor-type="'stockChart'"
+            :options="chartOptions2"
+          ></highcharts>
+        </client-only>
+      </b-tab>
     </b-tabs>
   </b-container>
 </template>
@@ -35,7 +44,7 @@ import { mapActions } from 'vuex'
 export default {
   data() {
     return {
-      currentTab: 1,
+      currentTab: 2,
       chartOptions: {
         credits: {
           enabled: false
@@ -229,6 +238,47 @@ export default {
             signalLine: {
               styles: {
                 lineColor: '#ffa544'
+              }
+            }
+          }
+        ]
+      },
+      chartOptions2: {
+        credits: {
+          enabled: false
+        },
+        chart: {
+          backgroundColor: 'rgba(1, 31, 75, 0.2)',
+          borderColor: '#011f4b',
+          height: 800
+        },
+        rangeSelector: {
+          enabled: false
+        },
+        navigator: {
+          enabled: false
+        },
+        scrollbar: {
+          enabled: false
+        },
+        xAxis: {
+          visible: false
+        },
+        yAxis: {
+          visible: false
+        },
+        series: [
+          {
+            type: 'area',
+            data: [],
+            color: 'rgb(255, 75, 75)',
+            fillOpacity: 0.3,
+            negativeColor: 'rgb(0, 188, 105)',
+            lineWidth: 0,
+            enableMouseTracking: false,
+            states: {
+              hover: {
+                enabled: false
               }
             }
           }
@@ -480,6 +530,42 @@ export default {
         this.$lodash.last(chart.series[0].points).onMouseOver()
         chart.hideLoading()
       })
+    },
+    async chartLoaded2(chart) {
+      chart.showLoading()
+      this.chartOptions2.series[0].data = [
+        { x: 1589792940000, y: 293 },
+        { x: 1589793540000, y: 293.5 },
+        { x: 1589794140000, y: 293.2 },
+        { x: 1589794740000, y: 291 },
+        { x: 1589795340000, y: 292 },
+        { x: 1589795940000, y: 291.5 },
+        { x: 1589796540000, y: 291.5 },
+        { x: 1589797140000, y: 292 },
+        { x: 1589797740000, y: 292 },
+        { x: 1589798340000, y: 292.5 },
+        { x: 1589798940000, y: 292 },
+        { x: 1589799540000, y: 292 },
+        { x: 1589800140000, y: 291.5 },
+        { x: 1589800740000, y: 292 },
+        { x: 1589801340000, y: 292.5 },
+        { x: 1589801940000, y: 292 },
+        { x: 1589802540000, y: 292 },
+        { x: 1589803140000, y: 292 },
+        { x: 1589803740000, y: 291.5 },
+        { x: 1589804340000, y: 291 },
+        { x: 1589804940000, y: 291.5 },
+        { x: 1589805540000, y: 291 },
+        { x: 1589806140000, y: 290.5 },
+        { x: 1589806740000, y: 290.5 },
+        { x: 1589807340000, y: 290.5 },
+        { x: 1589807940000, y: 290 },
+        { x: 1589808540000, y: 290.5 }
+      ]
+      this.chartOptions2.series[0].threshold = this.chartOptions2.series[0].data[0].y
+      await this.$nextTick()
+      await new Promise((resolve) => setTimeout(resolve, 3000))
+      chart.hideLoading()
     }
   }
 }
