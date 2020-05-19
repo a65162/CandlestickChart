@@ -25,6 +25,7 @@
     "lodash": "^4.17.15",
     "nuxt": "^2.0.0",
     "vue-json-views": "^1.1.0",
+    "vue-text-highlight": "^2.0.10",
     "vuedraggable": "^2.23.2"
   },
   "devDependencies": {

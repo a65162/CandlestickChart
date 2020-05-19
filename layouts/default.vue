@@ -36,6 +36,12 @@
               }"
               >Draggable Table</b-nav-item
             >
+            <b-nav-item
+              :to="{
+                name: 'vueTextHighlight'
+              }"
+              >Vue Text Highlight</b-nav-item
+            >
           </b-navbar-nav>
         </b-collapse>
       </b-navbar>

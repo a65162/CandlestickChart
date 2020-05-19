@@ -61,6 +61,10 @@ export default {
     {
       src: '~/plugins/vue-json-views',
       mode: 'client'
+    },
+    {
+      src: '~/plugins/vue-text-highlight',
+      mode: 'client'
     }
   ],
   /*
