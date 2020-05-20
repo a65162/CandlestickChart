@@ -43,8 +43,10 @@ import { mapActions } from 'vuex'
 
 export default {
   data() {
+    const vm = this
+
     return {
-      currentTab: 2,
+      currentTab: 1,
       chartOptions: {
         credits: {
           enabled: false
@@ -57,12 +59,25 @@ export default {
         rangeSelector: {
           enabled: false
         },
+        scrollbar: {
+          enabled: false
+        },
         plotOptions: {
           sma: {
             marker: {
               enabled: false
             },
             lineWidth: 1
+          },
+          series: {
+            states: {
+              hover: {
+                enabled: false
+              },
+              inactive: {
+                enabled: false
+              }
+            }
           }
         },
         title: {
@@ -79,6 +94,12 @@ export default {
           crosshair: {
             dashStyle: 'LongDash',
             color: 'rgba(230, 230, 230, 0.5)'
+          },
+          type: 'datetime',
+          labels: {
+            formatter() {
+              return vm.$moment(this.value).format('MM/DD')
+            }
           }
         },
         yAxis: [
@@ -133,21 +154,6 @@ export default {
             upColor: '#fa3032',
             lineColor: '#29b061',
             color: '#29b061'
-            // dataLabels: {
-            //   enabled: true,
-            //   filter: {
-            //     operator: '===',
-            //     property: 'x',
-            //     value: 1586995200000
-            //   },
-            //   useHTML: true,
-            //   formatter() {
-            //     console.log(this)
-            //     return '<img src="https://storage.googleapis.com/quants-images-prod/scantrader/upload/0164aa901d8d00003912000000000000.png/>'
-            //   }
-            //   // format:
-            //   //   '<img src="https://storage.googleapis.com/quants-images-prod/scantrader/upload/0164aa901d8d00003912000000000000.png/>'
-            // }
           },
           {
             type: 'sma',
@@ -226,6 +232,7 @@ export default {
           {
             type: 'macd',
             id: 'macd',
+            name: 'macd',
             linkedTo: 'candlestick-2330',
             yAxis: 3,
             color: '#fa3032',
@@ -374,6 +381,7 @@ export default {
             fontSize: '18px'
           })
           .add()
+
         chart['5ma'] = chart.renderer
           .text('5MA：', 10, 120)
           .css({
@@ -409,24 +417,48 @@ export default {
             fontSize: '18px'
           })
           .add()
+
         chart.volume = chart.renderer
-          .text('成交量：', 10, 430)
+          .text('成交量：', 10, 440)
           .css({
             color: 'white',
             fontSize: '16px'
           })
           .add()
+
         chart.K = chart.renderer
-          .text('K9：', 10, 520)
+          .text('K9：', 10, 530)
           .css({
             color: 'rgb(255, 125, 139)',
             fontSize: '16px'
           })
           .add()
         chart.D = chart.renderer
-          .text('D9：', 110, 520)
+          .text('D9：', 110, 530)
           .css({
             color: 'rgb(75, 150, 235)',
+            fontSize: '16px'
+          })
+          .add()
+
+        chart.DIF = chart.renderer
+          .text('DIF:', 10, 630)
+          .css({
+            color: '#f2e16e',
+            fontSize: '16px'
+          })
+          .add()
+        chart.MACD = chart.renderer
+          .text('MACD:', 200, 630)
+          .css({
+            color: '#4b96eb',
+            fontSize: '16px'
+          })
+          .add()
+        chart.DM = chart.renderer
+          .text('D-M:', 400, 630)
+          .css({
+            color: '#75f381',
             fontSize: '16px'
           })
           .add()
@@ -435,6 +467,7 @@ export default {
           const candlestickPoint = this.points.find(
             (point) => point.series.name === 'candlestick(2330)'
           )
+
           const fiveMA = this.points.find(
             (point) => point.series.name === 'ma(5)'
           )
@@ -450,10 +483,14 @@ export default {
           const twoHundredMA = this.points.find(
             (point) => point.series.name === 'ma(200)'
           )
+
           const volume = this.points.find(
             (point) => point.series.name === '成交量'
           )
+
           const KD = this.points.find((point) => point.series.name === 'KD')
+
+          const MACD = this.points.find((point) => point.series.name === 'macd')
 
           const { open, high, low, close } = vm.$lodash.get(
             candlestickPoint,
@@ -465,6 +502,7 @@ export default {
               close: 0
             }
           )
+
           const { y: fiveMAPrice } = vm.$lodash.get(fiveMA, 'point', {
             y: 0
           })
@@ -484,12 +522,19 @@ export default {
               y: 0
             }
           )
+
           const { y: volumeData } = vm.$lodash.get(volume, 'point', {
             y: 0
           })
+
           const { y: K, smoothed: D } = vm.$lodash.get(KD, 'point', {
             y: 0,
             smoothed: 0
+          })
+
+          const { MACD: DIF, signal, y: DM } = vm.$lodash.get(MACD, 'point', {
+            MACD: 0,
+            signal: 0
           })
 
           chart.openPrice.attr({
@@ -504,6 +549,7 @@ export default {
           chart.closePrice.attr({
             text: close
           })
+
           chart['5ma'].attr({
             text: `5MA：${fiveMAPrice.toFixed(1)}`
           })
@@ -519,14 +565,26 @@ export default {
           chart['200ma'].attr({
             text: `200MA：${twoHundredMAPrice.toFixed(1)}`
           })
+
           chart.volume.attr({
             text: `成交量：${volumeData.toLocaleString()}`
           })
+
           chart.K.attr({
             text: `K9：${K.toFixed(2)}`
           })
           chart.D.attr({
             text: `D9：${D.toFixed(2)}`
+          })
+
+          chart.DIF.attr({
+            text: `DIF：${DIF.toFixed(2)}`
+          })
+          chart.MACD.attr({
+            text: `MACD：${signal.toFixed(2)}`
+          })
+          chart.DM.attr({
+            text: `D-M：${DM.toFixed(2)}`
           })
           return ''
         }
