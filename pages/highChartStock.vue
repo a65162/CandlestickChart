@@ -250,7 +250,10 @@ export default {
         chart: {
           backgroundColor: 'rgba(1, 31, 75, 0.2)',
           borderColor: '#011f4b',
-          height: 800
+          // width: 100,
+          // height: 40,
+          // margin: 0,
+          panning: false
         },
         rangeSelector: {
           enabled: false
@@ -531,40 +534,60 @@ export default {
         chart.hideLoading()
       })
     },
-    async chartLoaded2(chart) {
+    chartLoaded2(chart) {
       chart.showLoading()
       this.chartOptions2.series[0].data = [
-        { x: 1589792940000, y: 293 },
-        { x: 1589793540000, y: 293.5 },
-        { x: 1589794140000, y: 293.2 },
-        { x: 1589794740000, y: 291 },
-        { x: 1589795340000, y: 292 },
-        { x: 1589795940000, y: 291.5 },
-        { x: 1589796540000, y: 291.5 },
-        { x: 1589797140000, y: 292 },
-        { x: 1589797740000, y: 292 },
-        { x: 1589798340000, y: 292.5 },
-        { x: 1589798940000, y: 292 },
-        { x: 1589799540000, y: 292 },
-        { x: 1589800140000, y: 291.5 },
-        { x: 1589800740000, y: 292 },
-        { x: 1589801340000, y: 292.5 },
-        { x: 1589801940000, y: 292 },
-        { x: 1589802540000, y: 292 },
-        { x: 1589803140000, y: 292 },
-        { x: 1589803740000, y: 291.5 },
-        { x: 1589804340000, y: 291 },
-        { x: 1589804940000, y: 291.5 },
-        { x: 1589805540000, y: 291 },
-        { x: 1589806140000, y: 290.5 },
-        { x: 1589806740000, y: 290.5 },
-        { x: 1589807340000, y: 290.5 },
-        { x: 1589807940000, y: 290 },
-        { x: 1589808540000, y: 290.5 }
+        { x: 1589965740000, y: 7.14 },
+        { x: 1589966340000, y: 7.15 },
+        { x: 1589966940000, y: 7.15 },
+        { x: 1589967540000, y: 7.16 },
+        { x: 1589968140000, y: 7.16 },
+        { x: 1589968740000, y: 7.15 },
+        { x: 1589969340000, y: 7.17 },
+        { x: 1589969940000, y: 7.14 },
+        { x: 1589970540000, y: 7.15 },
+        { x: 1589971140000, y: 7.13 },
+        { x: 1589971740000, y: 7.13 },
+        { x: 1589972340000, y: 7.14 },
+        { x: 1589972940000, y: 7.13 },
+        { x: 1589973540000, y: 7.14 },
+        { x: 1589974140000, y: 7.13 },
+        { x: 1589974740000, y: 7.13 },
+        { x: 1589975340000, y: 7.13 },
+        { x: 1589975940000, y: 7.15 },
+        { x: 1589976540000, y: 7.14 },
+        { x: 1589977140000, y: 7.14 },
+        { x: 1589977740000, y: 7.15 },
+        { x: 1589978340000, y: 7.14 },
+        { x: 1589978940000, y: 7.13 },
+        { x: 1589979540000, y: 7.13 },
+        { x: 1589980140000, y: 7.13 },
+        { x: 1589980740000, y: 7.14 },
+        { x: 1589981340000, y: 7.15 }
       ]
-      this.chartOptions2.series[0].threshold = this.chartOptions2.series[0].data[0].y
-      await this.$nextTick()
-      await new Promise((resolve) => setTimeout(resolve, 3000))
+      const startPrice = this.chartOptions2.series[0].data[0].y
+      this.chartOptions2.series[0].threshold = startPrice
+
+      // 讓 startPrice 線在圖表的水平置中
+      const lowPrice = this.$lodash.minBy(
+        this.chartOptions2.series[0].data,
+        'y'
+      ).y
+      const highPrice = this.$lodash.maxBy(
+        this.chartOptions2.series[0].data,
+        'y'
+      ).y
+
+      const lowPriceMargin = startPrice - lowPrice
+      const highPriceMargin = highPrice - startPrice
+
+      if (lowPriceMargin > highPriceMargin) {
+        this.chartOptions2.yAxis.max =
+          highPrice + (lowPriceMargin - highPriceMargin)
+      } else if (highPriceMargin > lowPriceMargin) {
+        this.chartOptions2.yAxis.min =
+          lowPrice - (highPriceMargin - lowPriceMargin)
+      }
       chart.hideLoading()
     }
   }
