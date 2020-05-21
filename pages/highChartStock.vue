@@ -154,7 +154,10 @@ export default {
             upLineColor: '#fa3032',
             upColor: '#fa3032',
             lineColor: '#29b061',
-            color: '#29b061'
+            color: '#29b061',
+            dataGrouping: {
+              enabled: false
+            }
           },
           {
             type: 'sma',
@@ -212,7 +215,10 @@ export default {
             name: '成交量',
             yAxis: 1,
             data: [],
-            turboThreshold: 0
+            turboThreshold: 0,
+            dataGrouping: {
+              enabled: false
+            }
           },
           {
             type: 'stochastic',
@@ -601,9 +607,30 @@ export default {
           })
           return ''
         }
+
+        // 加入圖表額外資訊
+        const notifies = [
+          {
+            x: 1587513600000,
+            name: '阿斯匹靈',
+            avatar:
+              'https://storage.googleapis.com/quants-images-prod/scantrader/upload/0164aa901d8d00003912000000000000.png'
+          },
+          {
+            x: 1585612800000,
+            name: '華倫老師',
+            avatar:
+              'https://storage.googleapis.com/quants-images-prod/scantrader/upload/0164aa8d62c800003912000000000000.png'
+          }
+        ]
         this.chartOptions.annotations.push(
-          ...[
-            {
+          ...notifies.map((notify) => {
+            const point = chart.series
+              .find((series) => series.type === 'candlestick')
+              .points.find((point) => {
+                return point.x === notify.x
+              })
+            return {
               labels: [
                 {
                   useHTML: true,
@@ -612,43 +639,22 @@ export default {
                   formatter() {
                     return `
                     <div class="d-flex flex-column align-items-center">
-                      <img class="rounded-circle" width="30" height="30" src="https://storage.googleapis.com/quants-images-prod/scantrader/upload/0164aa901d8d00003912000000000000.png" />
-                      <span class="mt-2">阿斯匹靈</span>
+                      <img class="rounded-circle" width="30" height="30" src="${notify.avatar}" />
+                      <span class="mt-2">${notify.name}</span>
                     </div>`
                   },
                   point: {
-                    x: 1587513600000,
-                    y: 300,
-                    xAxis: 0,
-                    yAxis: 0
-                  }
-                }
-              ]
-            },
-            {
-              labels: [
-                {
-                  useHTML: true,
-                  backgroundColor: 'white',
-                  borderColor: 'white',
-                  formatter() {
-                    return `
-                    <div class="d-flex flex-column align-items-center">
-                      <img class="rounded-circle" width="30" height="30" src="https://storage.googleapis.com/quants-images-prod/scantrader/upload/0164aa8d62c800003912000000000000.png" />
-                      <span class="mt-2">華倫老師</span>
-                    </div>`
-                  },
-                  point: {
-                    x: 1585612800000,
-                    y: 280,
+                    x: notify.x,
+                    y: point.y,
                     xAxis: 0,
                     yAxis: 0
                   }
                 }
               ]
             }
-          ]
+          })
         )
+
         this.$lodash.last(chart.series[0].points).onMouseOver()
         chart.hideLoading()
       })
