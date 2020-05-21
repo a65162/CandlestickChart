@@ -111,7 +111,11 @@ export default {
             top: '15%',
             height: '40%',
             offset: 0,
-            gridLineColor: 'rgba(230, 230, 230, 0.4)'
+            gridLineColor: 'rgba(230, 230, 230, 0.4)',
+            crosshair: {
+              dashStyle: 'LongDash',
+              color: 'rgba(230, 230, 230, 0.5)'
+            }
           },
           {
             labels: {
@@ -286,7 +290,7 @@ export default {
         },
         series: [
           {
-            type: 'area',
+            type: 'areaspline',
             data: [],
             color: 'rgb(255, 75, 75)',
             fillOpacity: 0.3,
@@ -306,7 +310,7 @@ export default {
   methods: {
     ...mapActions('api/jiashi', ['getStockPriceHistory']),
     chartLoaded(chart) {
-      chart.showLoading()
+      chart.showLoading('讀取中...')
       this.getStockPriceHistory({
         StockID: 'AS2330',
         Count: (new Date().getFullYear() - 1962) * 365,
