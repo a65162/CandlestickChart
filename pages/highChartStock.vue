@@ -51,6 +51,7 @@ export default {
         credits: {
           enabled: false
         },
+        annotations: [],
         chart: {
           backgroundColor: 'rgba(1, 31, 75, 0.2)',
           borderColor: '#011f4b',
@@ -299,16 +300,17 @@ export default {
   methods: {
     ...mapActions('api/jiashi', ['getStockPriceHistory']),
     chartLoaded(chart) {
-      const vm = this
       chart.showLoading()
       this.getStockPriceHistory({
         StockID: 'AS2330',
         Count: (new Date().getFullYear() - 1962) * 365,
         Period: 'D'
       }).then(async (data) => {
+        const vm = this
         const candlestick = this.chartOptions.series.find(
           (series) => series.type === 'candlestick'
         )
+
         const volume = this.chartOptions.series.find(
           (series) => series.id === 'volume'
         )
@@ -464,6 +466,7 @@ export default {
           .add()
 
         chart.options.tooltip.formatter = function() {
+          if (!this.points) return ''
           const candlestickPoint = this.points.find(
             (point) => point.series.name === 'candlestick(2330)'
           )
@@ -588,6 +591,54 @@ export default {
           })
           return ''
         }
+        this.chartOptions.annotations.push(
+          ...[
+            {
+              labels: [
+                {
+                  useHTML: true,
+                  backgroundColor: 'white',
+                  borderColor: 'white',
+                  formatter() {
+                    return `
+                    <div class="d-flex flex-column align-items-center">
+                      <img class="rounded-circle" width="30" height="30" src="https://storage.googleapis.com/quants-images-prod/scantrader/upload/0164aa901d8d00003912000000000000.png" />
+                      <span class="mt-2">阿斯匹靈</span>
+                    </div>`
+                  },
+                  point: {
+                    x: 1587513600000,
+                    y: 300,
+                    xAxis: 0,
+                    yAxis: 0
+                  }
+                }
+              ]
+            },
+            {
+              labels: [
+                {
+                  useHTML: true,
+                  backgroundColor: 'white',
+                  borderColor: 'white',
+                  formatter() {
+                    return `
+                    <div class="d-flex flex-column align-items-center">
+                      <img class="rounded-circle" width="30" height="30" src="https://storage.googleapis.com/quants-images-prod/scantrader/upload/0164aa8d62c800003912000000000000.png" />
+                      <span class="mt-2">華倫老師</span>
+                    </div>`
+                  },
+                  point: {
+                    x: 1585612800000,
+                    y: 280,
+                    xAxis: 0,
+                    yAxis: 0
+                  }
+                }
+              ]
+            }
+          ]
+        )
         this.$lodash.last(chart.series[0].points).onMouseOver()
         chart.hideLoading()
       })
