@@ -327,57 +327,64 @@ export default {
         await this.$nextTick()
 
         // 客製化
+        chart.date = chart.renderer
+          .text('日期：', 10, 80)
+          .css({
+            color: 'white',
+            fontSize: '18px'
+          })
+          .add()
         chart.renderer
-          .text('開：', 10, 80)
+          .text('開：', 190, 80)
           .css({
             color: 'white',
             fontSize: '18px'
           })
           .add()
         chart.openPrice = chart.renderer
-          .text('', 45, 80)
+          .text('', 225, 80)
           .css({
             color: '#f45651',
             fontSize: '18px'
           })
           .add()
         chart.renderer
-          .text('高：', 110, 80)
+          .text('高：', 290, 80)
           .css({
             color: 'white',
             fontSize: '18px'
           })
           .add()
         chart.highPrice = chart.renderer
-          .text('', 145, 80)
+          .text('', 325, 80)
           .css({
             color: '#f45651',
             fontSize: '18px'
           })
           .add()
         chart.renderer
-          .text('低：', 210, 80)
+          .text('低：', 390, 80)
           .css({
             color: 'white',
             fontSize: '18px'
           })
           .add()
         chart.lowPrice = chart.renderer
-          .text('', 245, 80)
+          .text('', 425, 80)
           .css({
             color: '#45c46e',
             fontSize: '18px'
           })
           .add()
         chart.renderer
-          .text('收：', 310, 80)
+          .text('收：', 490, 80)
           .css({
             color: 'white',
             fontSize: '18px'
           })
           .add()
         chart.closePrice = chart.renderer
-          .text('', 345, 80)
+          .text('', 525, 80)
           .css({
             color: '#45c46e',
             fontSize: '18px'
@@ -495,7 +502,7 @@ export default {
 
           const MACD = this.points.find((point) => point.series.name === 'macd')
 
-          const { open, high, low, close } = vm.$lodash.get(
+          const { x: date, open, high, low, close } = vm.$lodash.get(
             candlestickPoint,
             'point',
             {
@@ -540,6 +547,9 @@ export default {
             signal: 0
           })
 
+          chart.date.attr({
+            text: `日期：${vm.$moment(date).format('YYYY/MM/DD')}`
+          })
           chart.openPrice.attr({
             text: open
           })
