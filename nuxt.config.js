@@ -75,7 +75,8 @@ export default {
     '@nuxtjs/eslint-module',
     // Doc: https://github.com/nuxt-community/stylelint-module
     '@nuxtjs/stylelint-module',
-    '@nuxtjs/moment'
+    '@nuxtjs/moment',
+    '@nuxtjs/color-mode'
   ],
   /*
    ** Nuxt.js modules
@@ -89,6 +90,9 @@ export default {
     '@nuxtjs/dotenv',
     '@nuxtjs/proxy'
   ],
+  colorMode: {
+    preference: 'dark'
+  },
   bootstrapVue: {
     icons: true // Install the IconsPlugin (in addition to BootStrapVue plugin
   },
