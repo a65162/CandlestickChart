@@ -3,20 +3,17 @@
     <b-tabs v-model="currentTab" content-class="mt-3" lazy>
       <b-tab title="即時走勢"> </b-tab>
       <b-tab title="技術指標">
-        <!-- <div class="mb-3 text-right">
+        <div class="mb-3 text-right">
           <b-button
-            v-for="option in cycleOptions"
-            :key="option.value"
-            :disabled="cycle === option.value"
-            class="ml-3 cycleSwitch"
+            class="notifySwitch"
             :class="{
-              'cycleSwitch--active': cycle === option.value
+              'notifySwitch--active': showNotify
             }"
-            @click.prevent="cycle = option.value"
+            @click.prevent="showNotify = !showNotify"
           >
-            {{ option.text }}
+            {{ showNotify ? '關閉' : '開啟' }}訊號通知
           </b-button>
-        </div> -->
+        </div>
         <client-only>
           <highcharts
             :callback="chartLoaded"
@@ -46,7 +43,9 @@ export default {
     const vm = this
 
     return {
+      showNotify: false,
       currentTab: 1,
+      notifies: [],
       chartOptions: {
         credits: {
           enabled: false
@@ -306,6 +305,9 @@ export default {
         ]
       }
     }
+  },
+  watch: {
+    showNotify: 'updateAnnotations'
   },
   methods: {
     ...mapActions('api/jiashi', ['getStockPriceHistory']),
@@ -627,7 +629,7 @@ export default {
               'https://storage.googleapis.com/quants-images-prod/scantrader/upload/0164aa8d62c800003912000000000000.png'
           }
         ]
-        this.chartOptions.annotations.push(
+        this.notifies.push(
           ...notifies.map((notify) => {
             const point = chart.series
               .find((series) => series.type === 'candlestick')
@@ -635,17 +637,31 @@ export default {
                 return point.x === notify.x
               })
             return {
+              draggable: '',
+              events: {
+                mouseover(e) {
+                  e.target.parentNode
+                    .querySelector('.nametest')
+                    .classList.remove('d-none')
+                },
+                mouseout(e) {
+                  e.target.parentNode
+                    .querySelector('.nametest')
+                    .classList.add('d-none')
+                }
+              },
               labels: [
                 {
                   useHTML: true,
-                  backgroundColor: 'white',
-                  borderColor: 'white',
+                  backgroundColor: 'transparent',
+                  borderColor: 'transparent',
                   formatter() {
                     return `
-                    <div class="d-flex flex-column align-items-center">
-                      <img class="rounded-circle" width="30" height="30" src="${notify.avatar}" />
-                      <span class="mt-2">${notify.name}</span>
-                    </div>`
+                      <div class="d-flex align-items-center">
+                        <img class="rounded-circle" width="40" height="40" src="${notify.avatar}" />
+                        <span class="d-none ml-1 bg-white px-2 py-1 nametest" style="color: black;">${notify.name}</span>
+                      </div>
+                     `
                   },
                   point: {
                     x: notify.x,
@@ -662,6 +678,13 @@ export default {
         this.$lodash.last(chart.series[0].points).onMouseOver()
         chart.hideLoading()
       })
+    },
+    updateAnnotations() {
+      if (this.showNotify) {
+        this.chartOptions.annotations = this.notifies
+      } else {
+        this.chartOptions.annotations = []
+      }
     },
     chartLoaded2(chart) {
       chart.showLoading()
@@ -723,4 +746,20 @@ export default {
 }
 </script>
 
-<style lang="scss"></style>
+<style lang="scss" scoped>
+.notifySwitch {
+  background-color: rgb(33, 39, 75);
+  height: 32px;
+  color: white;
+  border: none;
+  font-size: 12px;
+
+  &--active {
+    color: rgb(255, 204, 161);
+  }
+}
+
+.container {
+  user-select: none;
+}
+</style>
