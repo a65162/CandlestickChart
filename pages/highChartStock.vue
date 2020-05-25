@@ -30,6 +30,13 @@
             :options="chartOptions2"
           ></highcharts>
         </client-only>
+        <client-only>
+          <highcharts
+            :callback="chartLoaded3"
+            :constructor-type="'stockChart'"
+            :options="chartOptions3"
+          ></highcharts>
+        </client-only>
       </b-tab>
     </b-tabs>
   </b-container>
@@ -290,6 +297,50 @@ export default {
         series: [
           {
             type: 'areaspline',
+            data: [],
+            color: 'rgb(255, 75, 75)',
+            fillOpacity: 0.3,
+            negativeColor: 'rgb(0, 188, 105)',
+            lineWidth: 0,
+            enableMouseTracking: false,
+            states: {
+              hover: {
+                enabled: false
+              }
+            }
+          }
+        ]
+      },
+      chartOptions3: {
+        credits: {
+          enabled: false
+        },
+        chart: {
+          backgroundColor: 'rgba(1, 31, 75, 0.2)',
+          borderColor: '#011f4b',
+          // width: 100,
+          // height: 40,
+          // margin: 0,
+          panning: false
+        },
+        rangeSelector: {
+          enabled: false
+        },
+        navigator: {
+          enabled: false
+        },
+        scrollbar: {
+          enabled: false
+        },
+        xAxis: {
+          visible: false
+        },
+        yAxis: {
+          visible: false
+        },
+        series: [
+          {
+            type: 'area',
             data: [],
             color: 'rgb(255, 75, 75)',
             fillOpacity: 0.3,
@@ -691,8 +742,8 @@ export default {
       this.chartOptions2.series[0].data = [
         { x: 1589965740000, y: 7.14 },
         { x: 1589966340000, y: 7.15 },
-        { x: 1589966940000, y: 7.15 },
-        { x: 1589967540000, y: 7.16 },
+        { x: 1589966940000, y: 7.3 },
+        { x: 1589967540000, y: 7.13 },
         { x: 1589968140000, y: 7.16 },
         { x: 1589968740000, y: 7.15 },
         { x: 1589969340000, y: 7.17 },
@@ -738,6 +789,62 @@ export default {
           highPrice + (lowPriceMargin - highPriceMargin)
       } else if (highPriceMargin > lowPriceMargin) {
         this.chartOptions2.yAxis.min =
+          lowPrice - (highPriceMargin - lowPriceMargin)
+      }
+      chart.hideLoading()
+    },
+    chartLoaded3(chart) {
+      chart.showLoading()
+      this.chartOptions3.series[0].data = [
+        { x: 1589965740000, y: 7.14 },
+        { x: 1589966340000, y: 7.15 },
+        { x: 1589966940000, y: 7.3 },
+        { x: 1589967540000, y: 7.13 },
+        { x: 1589968140000, y: 7.16 },
+        { x: 1589968740000, y: 7.15 },
+        { x: 1589969340000, y: 7.17 },
+        { x: 1589969940000, y: 7.14 },
+        { x: 1589970540000, y: 7.15 },
+        { x: 1589971140000, y: 7.13 },
+        { x: 1589971740000, y: 7.13 },
+        { x: 1589972340000, y: 7.14 },
+        { x: 1589972940000, y: 7.13 },
+        { x: 1589973540000, y: 7.14 },
+        { x: 1589974140000, y: 7.13 },
+        { x: 1589974740000, y: 7.13 },
+        { x: 1589975340000, y: 7.13 },
+        { x: 1589975940000, y: 7.15 },
+        { x: 1589976540000, y: 7.14 },
+        { x: 1589977140000, y: 7.14 },
+        { x: 1589977740000, y: 7.15 },
+        { x: 1589978340000, y: 7.14 },
+        { x: 1589978940000, y: 7.13 },
+        { x: 1589979540000, y: 7.13 },
+        { x: 1589980140000, y: 7.13 },
+        { x: 1589980740000, y: 7.14 },
+        { x: 1589981340000, y: 7.15 }
+      ]
+      const startPrice = this.chartOptions3.series[0].data[0].y
+      this.chartOptions3.series[0].threshold = startPrice
+
+      // 讓 startPrice 線在圖表的水平置中
+      const lowPrice = this.$lodash.minBy(
+        this.chartOptions3.series[0].data,
+        'y'
+      ).y
+      const highPrice = this.$lodash.maxBy(
+        this.chartOptions3.series[0].data,
+        'y'
+      ).y
+
+      const lowPriceMargin = startPrice - lowPrice
+      const highPriceMargin = highPrice - startPrice
+
+      if (lowPriceMargin > highPriceMargin) {
+        this.chartOptions3.yAxis.max =
+          highPrice + (lowPriceMargin - highPriceMargin)
+      } else if (highPriceMargin > lowPriceMargin) {
+        this.chartOptions3.yAxis.min =
           lowPrice - (highPriceMargin - lowPriceMargin)
       }
       chart.hideLoading()
